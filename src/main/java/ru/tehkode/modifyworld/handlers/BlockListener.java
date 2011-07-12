@@ -18,7 +18,6 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.*;
 import org.bukkit.plugin.Plugin;
