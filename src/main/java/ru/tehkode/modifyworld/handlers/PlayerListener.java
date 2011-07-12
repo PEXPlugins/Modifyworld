@@ -1,5 +1,5 @@
 /*
- * PermissionsEx - Permissions plugin for Bukkit
+ * Modifyworld - PermissionsEx ruleset plugin for Bukkit
  * Copyright (C) 2011 t3hk0d3 http://www.tehkode.ru
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ import ru.tehkode.permissions.PermissionUser;
 
 /**
  *
- * @author code
+ * @author t3hk0d3
  */
 public class PlayerListener extends ModifyworldListener {
 

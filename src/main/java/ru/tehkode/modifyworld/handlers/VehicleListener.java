@@ -1,5 +1,5 @@
 /*
- * PermissionsEx - Permissions plugin for Bukkit
+ * Modifyworld - PermissionsEx ruleset plugin for Bukkit
  * Copyright (C) 2011 t3hk0d3 http://www.tehkode.ru
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +18,6 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
