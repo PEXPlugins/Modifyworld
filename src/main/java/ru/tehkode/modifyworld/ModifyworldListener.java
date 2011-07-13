@@ -70,9 +70,7 @@ public class ModifyworldListener implements Listener {
         } else if (entity instanceof Wolf) {
             Wolf wolf = (Wolf) entity;
 
-            if (!wolf.isTamed()) {
-                return "animal.wolf.untamed";
-            } else if (wolf.getOwner() instanceof Player) {
+            if (wolf.isTamed() && wolf.getOwner() instanceof Player) {
                 return "animal.wolf." + ((Player) wolf.getOwner()).getName();
             } else {
                 return "animal.wolf";

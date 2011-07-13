@@ -18,6 +18,7 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import org.bukkit.Statistic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
@@ -61,24 +62,51 @@ public class EntityListener extends ModifyworldListener {
 
     @EventHandler(Type.ENTITY_DAMAGE)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event instanceof EntityDamageByEntityEvent) { // player is damager
+        if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
-            if (!(edbe.getDamager() instanceof Player)) { // not caused by player
-                return;
+
+            if (edbe.getDamager() instanceof Player) { // Prevent from damaging by player
+                Player player = (Player) edbe.getDamager();
+                if (!canMessWithEntity(player, "modifyworld.damage.deal.", event.getEntity())) {
+                    informPlayerAboutDenial(player);
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                }
             }
 
-            Player player = (Player) edbe.getDamager();
-            if (!canMessWithEntity(player, "modifyworld.entity.damage.deal.", event.getEntity())) {
-                informPlayerAboutDenial(player);
-                event.setCancelled(true);
+            if (!event.isCancelled() && edbe.getEntity() instanceof Player) { // Prevent from taking damage by player
+                Player player = (Player) edbe.getEntity();
+                if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
+                    informPlayerAboutDenial(player);
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                }
             }
-        } else if (event.getEntity() instanceof Player) { // player are been damaged by someone
+        } else if (event.getEntity() instanceof Player) { // player are been damaged by enviroment
             Player player = (Player) event.getEntity();
-            if (!canMessWithEntity(player, "modifyworld.entity.damage.take.", event.getEntity())) {
-                informPlayerAboutDenial(player);
+
+            String cause = event.getCause().name().toLowerCase().replace("_", "");
+
+            if (!permissionsManager.has(player, "modifyworld.damage.take." + cause)) {
                 event.setCancelled(true);
+                informPlayerAboutDenial(player);
                 event.setDamage(0);
             }
+
+        }
+    }
+
+    @EventHandler(Type.ENTITY_TAME)
+    public void onEntityTame(EntityTameEvent event) {
+        if (!(event.getOwner() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getOwner();
+
+        if (!permissionsManager.has(player, "modifyworld.tame." + getEntityName(event.getEntity()))) {
+            event.setCancelled(true);
+            informPlayerAboutDenial(player);
         }
     }
 
@@ -86,7 +114,7 @@ public class EntityListener extends ModifyworldListener {
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.getTarget() instanceof Player) {
             Player player = (Player) event.getTarget();
-            if (!permissionsManager.has(player, "modifyworld.entity.mobtarget." + getEntityName(event.getEntity()))) {
+            if (!permissionsManager.has(player, "modifyworld.mobtarget." + getEntityName(event.getEntity()))) {
                 event.setCancelled(true);
             }
         }
