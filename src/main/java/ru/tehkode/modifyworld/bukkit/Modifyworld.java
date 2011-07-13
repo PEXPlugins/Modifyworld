@@ -58,14 +58,17 @@ public class Modifyworld extends JavaPlugin {
 
         Configuration config = this.getConfiguration();
 
-        if (config.getProperty("enabled") == null) { // Migrate
+        if (config.getProperty("enable") == null) { // Migrate
             this.initializeConfiguration(config);
         }
 
 
         if (config.getBoolean("enable", false)) {
-            logger.info("[Modifyworld] Modifyworld enabled!");
             this.registerListeners();
+            logger.info("[Modifyworld] Modifyworld enabled!");
+        } else {
+            logger.info("[Modifyworld] Modifyworld disabled. Check config.yml!");
+            this.getPluginLoader().disablePlugin(this);
         }
 
         config.save();
@@ -73,6 +76,8 @@ public class Modifyworld extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.listeners.clear();
+        
         logger.info("[Modifyworld] Modifyworld disabled!");
     }
 
