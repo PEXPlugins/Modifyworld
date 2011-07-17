@@ -132,7 +132,7 @@ public class ModifyworldListener implements Listener {
                 try {
                     eventHandlerMethod.invoke(listener, event);
                 } catch (Exception e) {
-                    Logger.getLogger("Minecraft").warning("[Modifyworld] Failed to execute Modifyworld event handler");
+                    Logger.getLogger("Minecraft").warning("[Modifyworld] Failed to execute Modifyworld event handler for Event." + event.getEventName());
                     e.printStackTrace();
                 }
             }
