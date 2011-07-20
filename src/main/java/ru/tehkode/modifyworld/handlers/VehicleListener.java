@@ -38,7 +38,7 @@ public class VehicleListener extends ModifyworldListener {
         super(plugin, config);
     }
 
-    @EventHandler(Type.VEHICLE_DESTROY)
+    @EventHandler(Type.VEHICLE_DAMAGE)
     public void onVehicleDamage(VehicleDamageEvent event) {
         if (!(event.getAttacker() instanceof Player)) {
             return;
