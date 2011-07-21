@@ -18,6 +18,7 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,8 +42,6 @@ public class PlayerListener extends ModifyworldListener {
 
     public final static String WHITELIST_MESSAGE = "You are not allowed to join this server. Goodbye!";
     public final static String PROHIBITED_ITEM = "You have prohibited item \"%s\".";
-    
-    
     protected boolean checkInventory = false;
     protected String whitelistKickMessage = WHITELIST_MESSAGE;
     protected String prohibitedItemMessage = PROHIBITED_ITEM;
@@ -62,7 +61,7 @@ public class PlayerListener extends ModifyworldListener {
 
         if (user != null && !user.has("modifyworld.login", Bukkit.getServer().getWorlds().get(0).getName())) {
             event.disallow(PlayerPreLoginEvent.Result.KICK_WHITELIST, whitelistKickMessage);
-            return;
+            Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
         }
     }
 
@@ -74,7 +73,7 @@ public class PlayerListener extends ModifyworldListener {
         if (user != null && !user.has("modifyworld.login", Bukkit.getServer().getWorlds().get(0).getName())) {
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, whitelistKickMessage);
             event.getPlayer().kickPlayer(whitelistKickMessage);
-            return;
+            Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
         }
     }
 
