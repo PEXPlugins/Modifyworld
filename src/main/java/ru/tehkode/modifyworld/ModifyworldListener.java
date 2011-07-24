@@ -50,7 +50,7 @@ public class ModifyworldListener implements Listener {
 
         this.registerEvents(plugin);
 
-        this.informPlayers = config.getBoolean("informplayers", informPlayers);
+        this.informPlayers = config.getBoolean("informPlayers", informPlayers);
         this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
     }
 
