@@ -94,9 +94,9 @@ public class Modifyworld extends JavaPlugin {
         config.setProperty("whitelist", pexConfig.getBoolean("permissions.modifyworld.whitelist", false));
 
         // Messages
-        config.setProperty("message.whitelistMessage", pexConfig.getString("permissions.modifyworld.whitelistMessage", PlayerListener.WHITELIST_MESSAGE));
-        config.setProperty("message.prohibitedItem", PlayerListener.PROHIBITED_ITEM);
-        config.setProperty("message.permissionDenied", ModifyworldListener.PERMISSION_DENIED);
+        config.setProperty("messages.whitelistMessage", pexConfig.getString("permissions.modifyworld.whitelistMessage", PlayerListener.WHITELIST_MESSAGE));
+        config.setProperty("messages.prohibitedItem", PlayerListener.PROHIBITED_ITEM);
+        config.setProperty("messages.permissionDenied", ModifyworldListener.PERMISSION_DENIED);
 
     }
 
