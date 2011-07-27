@@ -18,7 +18,6 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
-import org.bukkit.Statistic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
@@ -74,7 +73,7 @@ public class EntityListener extends ModifyworldListener {
                 }
             }
 
-            if (!event.isCancelled() && edbe.getEntity() instanceof Player) { // Prevent from taking damage by player
+            if (!event.isCancelled() && edbe.getEntity() instanceof Player && edbe.getDamager() != null) { // Prevent from taking damage by player
                 Player player = (Player) edbe.getEntity();
                 if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
                     informPlayerAboutDenial(player);
