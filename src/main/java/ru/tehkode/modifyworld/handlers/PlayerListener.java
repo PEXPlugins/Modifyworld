@@ -150,7 +150,7 @@ public class PlayerListener extends ModifyworldListener {
 
     @EventHandler(Type.PLAYER_INTERACT_ENTITY)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (!permissionsManager.has(event.getPlayer(), "modifyworld.entity.interact." + getEntityName(event.getRightClicked()))) {
+        if (!permissionsManager.has(event.getPlayer(), "modifyworld.interact." + getEntityName(event.getRightClicked()))) {
             event.setCancelled(true);
             informPlayerAboutDenial(event.getPlayer());
         }

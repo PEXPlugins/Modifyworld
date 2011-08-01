@@ -36,7 +36,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  *
  * @author t3hk0d3
  */
-public class ModifyworldListener implements Listener {
+public abstract class ModifyworldListener implements Listener {
 
     public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
     protected String permissionDenied = PERMISSION_DENIED;
