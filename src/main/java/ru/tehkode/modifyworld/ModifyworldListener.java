@@ -76,7 +76,21 @@ public abstract class ModifyworldListener implements Listener {
                 return "animal.wolf";
             }
         }
-
+        
+        // Fixtures for Bukkit dev lazyness
+        if (entity instanceof Ghast){
+            return "monster.ghast";
+        }
+        
+        if (entity instanceof Squid){
+            return "animal.squid";
+        }
+        
+        if (entity instanceof Slime){
+            return "monster.slime";
+        }
+        
+        
         String entityName = entity.getClass().getSimpleName();
 
         if (entityName.startsWith("Craft")) {
@@ -88,7 +102,7 @@ public abstract class ModifyworldListener implements Listener {
         } else if (Animals.class.isAssignableFrom(entity.getClass())) {
             entityName = "animal." + entityName;
         }
-
+        
         return entityName;
     }
 
