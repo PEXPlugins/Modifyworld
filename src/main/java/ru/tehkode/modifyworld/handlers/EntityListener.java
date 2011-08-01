@@ -64,22 +64,32 @@ public class EntityListener extends ModifyworldListener {
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
 
+            Player player;
             if (edbe.getDamager() instanceof Player) { // Prevent from damaging by player
-                Player player = (Player) edbe.getDamager();
+                player = (Player) edbe.getDamager();
                 if (!canMessWithEntity(player, "modifyworld.damage.deal.", event.getEntity())) {
-                    informPlayerAboutDenial(player);
-                    event.setCancelled(true);
-                    event.setDamage(0);
+                    cancelDamageEvent(player, event);
+                    return;
                 }
             }
 
-            if (!event.isCancelled() && edbe.getEntity() instanceof Player && edbe.getDamager() != null) { // Prevent from taking damage by player
-                Player player = (Player) edbe.getEntity();
+            player = (Player) edbe.getEntity();
+            if (edbe.getEntity() instanceof Player && edbe.getDamager() != null) { // Prevent from taking damage by player
                 if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
-                    informPlayerAboutDenial(player);
-                    event.setCancelled(true);
-                    event.setDamage(0);
+                    cancelDamageEvent(player, event);
+                    return;
                 }
+            }
+            
+            if (edbe instanceof EntityDamageByProjectileEvent && edbe.getDamager() == null){
+                EntityDamageByProjectileEvent edpe = (EntityDamageByProjectileEvent)edbe;
+                
+                if (!canMessWithEntity(player, "modifyworld.damage.take.", edpe.getProjectile())) {
+                    cancelDamageEvent(player, event);
+                    return;
+                }
+                
+                
             }
         } else if (event.getEntity() instanceof Player) { // player are been damaged by enviroment
             Player player = (Player) event.getEntity();
@@ -87,12 +97,16 @@ public class EntityListener extends ModifyworldListener {
             String cause = event.getCause().name().toLowerCase().replace("_", "");
 
             if (!permissionsManager.has(player, "modifyworld.damage.take." + cause)) {
-                event.setCancelled(true);
-                informPlayerAboutDenial(player);
-                event.setDamage(0);
+                cancelDamageEvent(player, event);
+                return;
             }
-
         }
+    }
+
+    protected void cancelDamageEvent(Player player, EntityDamageEvent event) {
+        informPlayerAboutDenial(player);
+        event.setCancelled(true);
+        event.setDamage(0);
     }
 
     @EventHandler(Type.ENTITY_TAME)

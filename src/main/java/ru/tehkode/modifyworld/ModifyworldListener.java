@@ -101,6 +101,8 @@ public abstract class ModifyworldListener implements Listener {
             entityName = "monster." + entityName;
         } else if (Animals.class.isAssignableFrom(entity.getClass())) {
             entityName = "animal." + entityName;
+        } else if (Projectile.class.isAssignableFrom(entity.getClass())) {
+            entityName = "projectile." + entityName;
         }
         
         return entityName;
