@@ -73,24 +73,26 @@ public class EntityListener extends ModifyworldListener {
                 }
             }
 
-            player = (Player) edbe.getEntity();
-            if (edbe.getEntity() instanceof Player && edbe.getDamager() != null) { // Prevent from taking damage by player
-                if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
-                    cancelDamageEvent(player, event);
-                    return;
+            if (edbe.getEntity() instanceof Player) {
+                player = (Player) edbe.getEntity();
+                if (edbe.getDamager() != null) { // Prevent from taking damage by entity
+                    if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
+                        cancelDamageEvent(player, event);
+                        return;
+                    }
+                }
+
+                if (edbe instanceof EntityDamageByProjectileEvent && edbe.getDamager() == null) { // Prevent damage taken from dipenser projectile
+                    EntityDamageByProjectileEvent edpe = (EntityDamageByProjectileEvent) edbe;
+
+                    if (!canMessWithEntity(player, "modifyworld.damage.take.", edpe.getProjectile())) {
+                        cancelDamageEvent(player, event);
+                        return;
+                    }
+
                 }
             }
-            
-            if (edbe instanceof EntityDamageByProjectileEvent && edbe.getDamager() == null){
-                EntityDamageByProjectileEvent edpe = (EntityDamageByProjectileEvent)edbe;
-                
-                if (!canMessWithEntity(player, "modifyworld.damage.take.", edpe.getProjectile())) {
-                    cancelDamageEvent(player, event);
-                    return;
-                }
-                
-                
-            }
+
         } else if (event.getEntity() instanceof Player) { // player are been damaged by enviroment
             Player player = (Player) event.getEntity();
 
