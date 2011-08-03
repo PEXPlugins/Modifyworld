@@ -42,9 +42,13 @@ public class PlayerListener extends ModifyworldListener {
 
     public final static String WHITELIST_MESSAGE = "You are not allowed to join this server. Goodbye!";
     public final static String PROHIBITED_ITEM = "You have prohibited item \"%s\".";
+    
     protected boolean checkInventory = false;
+    protected boolean dropRestrictedItem = false;
+    
     protected String whitelistKickMessage = WHITELIST_MESSAGE;
     protected String prohibitedItemMessage = PROHIBITED_ITEM;
+    
 
     public PlayerListener(Plugin plugin, ConfigurationNode config) {
         super(plugin, config);
@@ -52,6 +56,8 @@ public class PlayerListener extends ModifyworldListener {
         this.whitelistKickMessage = config.getString("messages.whitelist", this.whitelistKickMessage);
         this.prohibitedItemMessage = config.getString("messages.prohibitedItem", this.prohibitedItemMessage);
         this.checkInventory = config.getBoolean("itemRestrictions", this.checkInventory);
+        this.dropRestrictedItem = config.getBoolean("drop-restricted-item", this.dropRestrictedItem);
+        
     }
 
     @EventHandler(Type.PLAYER_PRELOGIN)
@@ -178,6 +184,11 @@ public class PlayerListener extends ModifyworldListener {
         for (ItemStack stack : inventory.getContents()) {
             if (stack != null && !permissionsManager.has(player, "modifyworld.items.have." + stack.getTypeId())) {
                 inventory.remove(stack);
+                
+                if(this.dropRestrictedItem){
+                    player.getWorld().dropItemNaturally(player.getLocation(), stack);
+                }
+                
                 informPlayer(player, String.format(this.prohibitedItemMessage, stack.getType().name()));
             }
         }
