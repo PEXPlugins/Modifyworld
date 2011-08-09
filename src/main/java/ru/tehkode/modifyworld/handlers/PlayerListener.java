@@ -78,7 +78,7 @@ public class PlayerListener extends ModifyworldListener {
 
         if (user != null && !user.has("modifyworld.login", Bukkit.getServer().getWorlds().get(0).getName())) {
             event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, whitelistKickMessage);
-            event.getPlayer().kickPlayer(whitelistKickMessage);
+            //event.getPlayer().kickPlayer(whitelistKickMessage);
             Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
         }
     }
