@@ -109,15 +109,7 @@ public abstract class ModifyworldListener implements Listener {
     }
 
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        if (permissionsManager.has(player, basePermission + type.getId())) {
-            return true;
-        }
-
-        if (permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", ""))) {
-            return true;
-        }
-
-        return false;
+        return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", "")) && permissionsManager.has(player, basePermission + type.getId());
     }
 
     private void registerEvents(Plugin plugin) {
