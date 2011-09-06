@@ -109,7 +109,7 @@ public abstract class ModifyworldListener implements Listener {
     }
 
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", "")) && permissionsManager.has(player, basePermission + type.getId());
+        return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", "")) || permissionsManager.has(player, basePermission + type.getId());
     }
 
     private void registerEvents(Plugin plugin) {
