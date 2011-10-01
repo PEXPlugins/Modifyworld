@@ -165,7 +165,7 @@ public class PlayerListener extends ModifyworldListener {
     @EventHandler(Type.PLAYER_INTERACT)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Action action = event.getAction();
-        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK) {
+        if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
             return;
         }
 

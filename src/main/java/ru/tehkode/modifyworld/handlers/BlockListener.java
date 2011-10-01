@@ -18,8 +18,13 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.*;
+import org.bukkit.event.painting.PaintingBreakByEntityEvent;
+import org.bukkit.event.painting.PaintingBreakEvent;
+import org.bukkit.event.painting.PaintingPlaceEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.ConfigurationNode;
 import ru.tehkode.modifyworld.EventHandler;
@@ -31,23 +36,46 @@ import ru.tehkode.modifyworld.ModifyworldListener;
  */
 public class BlockListener extends ModifyworldListener {
 
-    public BlockListener(Plugin plugin, ConfigurationNode config) {
-        super(plugin, config);
-    }
-    
-    @EventHandler(Type.BLOCK_BREAK)
-    public void onBlockBreak(BlockBreakEvent event) {
-        if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock().getType())) {
-            informPlayerAboutDenial(event.getPlayer());
-            event.setCancelled(true);
-        }
-    }
+	public BlockListener(Plugin plugin, ConfigurationNode config) {
+		super(plugin, config);
+	}
 
-    @EventHandler(Type.BLOCK_PLACE)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock().getType())) {
-            informPlayerAboutDenial(event.getPlayer());
-            event.setCancelled(true);
-        }
-    }
+	@EventHandler(Type.BLOCK_BREAK)
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock().getType())) {
+			informPlayerAboutDenial(event.getPlayer());
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(Type.BLOCK_PLACE)
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock().getType())) {
+			informPlayerAboutDenial(event.getPlayer());
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(Type.PAINTING_BREAK)
+	public void onPaintingBreak(PaintingBreakEvent event) {
+		if (!(event instanceof PaintingBreakByEntityEvent)) {
+			return;
+		}
+
+		PaintingBreakByEntityEvent pbee = (PaintingBreakByEntityEvent) event;
+		if (pbee.getRemover() instanceof Player
+				&& !canInteractWithMaterial((Player) pbee.getRemover(), "modifyworld.blocks.destroy.", Material.PAINTING)) {
+
+			informPlayerAboutDenial((Player) pbee.getRemover());
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(Type.PAINTING_PLACE)
+	public void onPaintingPlace(PaintingPlaceEvent event) {
+		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
+			informPlayerAboutDenial(event.getPlayer());
+			event.setCancelled(true);
+		}
+	}
 }

@@ -39,26 +39,6 @@ public class EntityListener extends ModifyworldListener {
         super(plugin, config);
     }
 
-    protected boolean canMessWithEntity(Player player, String basePermission, Entity entity) {
-        if (entity instanceof Player) {
-            PermissionUser entityUser = permissionsManager.getUser(((Player) entity).getName());
-
-            if (entityUser == null) {
-                return false;
-            }
-
-            for (PermissionGroup group : entityUser.getGroups()) {
-                if (permissionsManager.has(player, basePermission + "group." + group.getName())) {
-                    return true;
-                }
-            }
-
-            return permissionsManager.has(player, basePermission + "player." + entityUser.getName());
-        }
-
-        return permissionsManager.has(player, basePermission + getEntityName(entity));
-    }
-
     @EventHandler(Type.ENTITY_DAMAGE)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event instanceof EntityDamageByEntityEvent) {
@@ -133,5 +113,25 @@ public class EntityListener extends ModifyworldListener {
                 event.setCancelled(true);
             }
         }
+    }
+	
+	protected boolean canMessWithEntity(Player player, String basePermission, Entity entity) {
+        if (entity instanceof Player) {
+            PermissionUser entityUser = permissionsManager.getUser(((Player) entity).getName());
+
+            if (entityUser == null) {
+                return false;
+            }
+
+            for (PermissionGroup group : entityUser.getGroups()) {
+                if (permissionsManager.has(player, basePermission + "group." + group.getName())) {
+                    return true;
+                }
+            }
+
+            return permissionsManager.has(player, basePermission + "player." + entityUser.getName());
+        }
+
+        return permissionsManager.has(player, basePermission + getEntityName(entity));
     }
 }
