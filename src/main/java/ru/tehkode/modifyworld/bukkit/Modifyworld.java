@@ -85,7 +85,7 @@ public class Modifyworld extends JavaPlugin {
         // At migrate and setup defaults
         PermissionsEx pex = (PermissionsEx) this.getServer().getPluginManager().getPlugin("PermissionsEx");
 
-        ru.tehkode.permissions.config.Configuration pexConfig = pex.getConfig();
+        Configuration pexConfig = pex.getConfiguration();
 
         // Flags
         config.setProperty("enable", pexConfig.getBoolean("permissions.modifyworld.enabled", false));
