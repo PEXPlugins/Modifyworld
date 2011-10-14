@@ -43,6 +43,7 @@ public abstract class ModifyworldListener implements Listener {
     protected PermissionManager permissionsManager;
     protected ConfigurationNode config;
     protected boolean informPlayers = false;
+    protected boolean useBlockid = false;
 
     public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
         this.permissionsManager = PermissionsEx.getPermissionManager();
@@ -51,6 +52,7 @@ public abstract class ModifyworldListener implements Listener {
         this.registerEvents(plugin);
 
         this.informPlayers = config.getBoolean("informPlayers", informPlayers);
+        this.useBlockid = config.getBoolean("useBlockid", useBlockid);
         this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
     }
 
@@ -109,7 +111,11 @@ public abstract class ModifyworldListener implements Listener {
     }
 
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", "")) || permissionsManager.has(player, basePermission + type.getId());
+        if(this.useBlockid) {
+            return permissionsManager.has(player, basePermission + type.getId());
+        } else {
+            return permissionManager.has(player, basePermission + type.name().toLowerCase().replace("_", ""));
+        }     
     }
 
     private void registerEvents(Plugin plugin) {
