@@ -114,7 +114,7 @@ public abstract class ModifyworldListener implements Listener {
         if(this.useBlockid) {
             return permissionsManager.has(player, basePermission + type.getId());
         } else {
-            return permissionManager.has(player, basePermission + type.name().toLowerCase().replace("_", ""));
+            return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", ""));
         }     
     }
 
