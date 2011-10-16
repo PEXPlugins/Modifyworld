@@ -38,7 +38,10 @@ public class Modifyworld extends JavaPlugin {
 
     protected final static Logger logger = Logger.getLogger("Minecraft");
     protected final static Class<? extends ModifyworldListener>[] LISTENERS = new Class[]{
-        PlayerListener.class, EntityListener.class, BlockListener.class, VehicleListener.class
+        PlayerListener.class,
+        EntityListener.class,
+        BlockListener.class,
+        VehicleListener.class
     };
     protected List<ModifyworldListener> listeners = new ArrayList<ModifyworldListener>();
 

@@ -43,6 +43,7 @@ public abstract class ModifyworldListener implements Listener {
     protected PermissionManager permissionsManager;
     protected ConfigurationNode config;
     protected boolean informPlayers = false;
+    protected boolean useMaterialNames = true;
 
     public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
         this.permissionsManager = PermissionsEx.getPermissionManager();
@@ -52,6 +53,7 @@ public abstract class ModifyworldListener implements Listener {
 
         this.informPlayers = config.getBoolean("informPlayers", informPlayers);
         this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
+        this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
     }
 
     protected void informPlayer(Player player, String message) {
@@ -109,7 +111,7 @@ public abstract class ModifyworldListener implements Listener {
     }
 
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        return permissionsManager.has(player, basePermission + type.name().toLowerCase().replace("_", "")) && permissionsManager.has(player, basePermission + type.getId());
+        return permissionsManager.has(player, basePermission + (this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : type.getId() ) );
     }
 
     private void registerEvents(Plugin plugin) {
