@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -44,6 +45,7 @@ public abstract class ModifyworldListener implements Listener {
     protected ConfigurationNode config;
     protected boolean informPlayers = false;
     protected boolean useMaterialNames = true;
+    protected boolean checkMetadata = false;
 
     public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
         this.permissionsManager = PermissionsEx.getPermissionManager();
@@ -54,6 +56,7 @@ public abstract class ModifyworldListener implements Listener {
         this.informPlayers = config.getBoolean("informPlayers", informPlayers);
         this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
         this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
+        this.checkMetadata = config.getBoolean("check-metadata", checkMetadata);
     }
 
     protected void informPlayer(Player player, String message) {
@@ -110,8 +113,22 @@ public abstract class ModifyworldListener implements Listener {
         return entityName;
     }
 
+    protected String getMaterialPermission(String basePermission, Material type){
+        return basePermission + (this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : type.getId() );
+    }
+    
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        return permissionsManager.has(player, basePermission + (this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : type.getId() ) );
+        return permissionsManager.has(player,  this.getMaterialPermission(basePermission, type));
+    }
+    
+    protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
+        String permission = this.getMaterialPermission(basePermission, block.getType());
+        
+        if(this.checkMetadata){
+            permission += "." + block.getData();
+        }
+                
+        return permissionsManager.has(player, permission);
     }
 
     private void registerEvents(Plugin plugin) {

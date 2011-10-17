@@ -42,7 +42,7 @@ public class BlockListener extends ModifyworldListener {
 
 	@EventHandler(Type.BLOCK_BREAK)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock().getType())) {
+		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
 			event.setCancelled(true);
 		}
@@ -50,7 +50,7 @@ public class BlockListener extends ModifyworldListener {
 
 	@EventHandler(Type.BLOCK_PLACE)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock().getType())) {
+		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
 			event.setCancelled(true);
 		}
