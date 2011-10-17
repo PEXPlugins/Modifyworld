@@ -61,7 +61,6 @@ public class PlayerListener extends ModifyworldListener {
     @EventHandler(Type.PLAYER_TOGGLE_SNEAK)
     public void onPlayerSneak(PlayerToggleSneakEvent event) {        
         if (event.isSneaking() && !permissionsManager.has(event.getPlayer(), "modifyworld.sneak")) {
-            informPlayer(event.getPlayer(), ChatColor.RED + "Sorry, you don't have enough permissions");
             event.setCancelled(true);
             event.getPlayer().setSneaking(false);
         }
@@ -70,7 +69,6 @@ public class PlayerListener extends ModifyworldListener {
     @EventHandler(Type.PLAYER_TOGGLE_SPRINT)
     public void onPlayerSprint(PlayerToggleSprintEvent event) {
         if (event.isSprinting() && !permissionsManager.has(event.getPlayer(), "modifyworld.sprint")) {
-            informPlayer(event.getPlayer(), ChatColor.RED + "Sorry, you don't have enough permissions");
             event.setCancelled(true);
             event.getPlayer().setSprinting(false);
         }
