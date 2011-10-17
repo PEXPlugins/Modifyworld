@@ -187,7 +187,7 @@ public class PlayerListener extends ModifyworldListener {
             return;
         }
         
-        if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.interact.", event.getClickedBlock().getType())) {
+        if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.interact.", event.getClickedBlock())) {
             informPlayerAboutDenial(event.getPlayer());
             event.setCancelled(true);
         }
