@@ -124,7 +124,7 @@ public abstract class ModifyworldListener implements Listener {
     protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
         String permission = this.getMaterialPermission(basePermission, block.getType());
         
-        if(this.checkMetadata){
+        if (this.checkMetadata) {
             permission += "." + block.getData();
         }
                 
