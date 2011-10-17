@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -189,6 +190,17 @@ public class PlayerListener extends ModifyworldListener {
         
         if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.interact.", event.getClickedBlock())) {
             informPlayerAboutDenial(event.getPlayer());
+            event.setCancelled(true);
+        }
+    }
+    
+    @EventHandler(Type.FOOD_LEVEL_CHANGE)
+    public void onFoodLevelChange(FoodLevelChangeEvent event){
+        Player player = event.getEntity() instanceof Player ? (Player)event.getEntity() : null;
+        
+        if(player == null) return;
+        
+        if (!permissionsManager.has(player, "modifyworld.digestion")){
             event.setCancelled(true);
         }
     }
