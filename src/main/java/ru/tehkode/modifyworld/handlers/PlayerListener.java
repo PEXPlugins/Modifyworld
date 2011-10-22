@@ -178,10 +178,12 @@ public class PlayerListener extends ModifyworldListener {
     
     @EventHandler(Type.PLAYER_INTERACT)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        // Checking item restriction
-        this.checkPlayerInventory(event.getPlayer());
-        
         Action action = event.getAction();
+        
+        if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){ // item restriction check
+            this.checkPlayerInventory(event.getPlayer());
+        }
+        
         if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
             return;
         }
