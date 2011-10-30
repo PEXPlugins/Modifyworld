@@ -26,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -119,6 +120,16 @@ public abstract class ModifyworldListener implements Listener {
     
     protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
         return permissionsManager.has(player,  this.getMaterialPermission(basePermission, type));
+    }
+	
+	protected boolean canInteractWithItem(Player player, String basePermission, ItemStack item) {
+		String permission = this.getMaterialPermission(basePermission, item.getType());
+        
+        if (this.checkMetadata) {
+            permission += "." + item.getData().getData();
+        }
+                
+        return permissionsManager.has(player, permission);
     }
     
     protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {

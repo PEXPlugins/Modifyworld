@@ -141,7 +141,7 @@ public class PlayerListener extends ModifyworldListener {
     
     @EventHandler(Type.PLAYER_PICKUP_ITEM)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.items.pickup.", event.getItem().getItemStack().getType())) {
+        if (!canInteractWithItem(event.getPlayer(), "modifyworld.items.pickup.", event.getItem().getItemStack())) {
             event.setCancelled(true);
         }
         
@@ -150,7 +150,7 @@ public class PlayerListener extends ModifyworldListener {
     
     @EventHandler(Type.PLAYER_DROP_ITEM)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.items.drop.", event.getItemDrop().getItemStack().getType())) {
+        if (!canInteractWithItem(event.getPlayer(), "modifyworld.items.drop.", event.getItemDrop().getItemStack())) {
             informPlayerAboutDenial(event.getPlayer());
             event.setCancelled(true);
         }
@@ -212,7 +212,7 @@ public class PlayerListener extends ModifyworldListener {
         
         Inventory inventory = player.getInventory();
         for (ItemStack stack : inventory.getContents()) {
-            if (stack != null && !permissionsManager.has(player, "modifyworld.items.have." + stack.getTypeId())) {
+            if (stack != null && !canInteractWithItem(player, "modifyworld.items.have.", stack)) {
                 inventory.remove(stack);
                 
                 if (this.dropRestrictedItem) {
