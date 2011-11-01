@@ -40,140 +40,139 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  */
 public abstract class ModifyworldListener implements Listener {
 
-    public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
-    protected String permissionDenied = PERMISSION_DENIED;
-    protected PermissionManager permissionsManager;
-    protected ConfigurationNode config;
-    protected boolean informPlayers = false;
-    protected boolean useMaterialNames = true;
-    protected boolean checkMetadata = false;
+	public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
+	protected String permissionDenied = PERMISSION_DENIED;
+	protected PermissionManager permissionsManager;
+	protected ConfigurationNode config;
+	protected boolean informPlayers = false;
+	protected boolean useMaterialNames = true;
+	protected boolean checkMetadata = false;
+	protected boolean checkItemUse = false;
 
-    public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
-        this.permissionsManager = PermissionsEx.getPermissionManager();
-        this.config = config;
+	public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
+		this.permissionsManager = PermissionsEx.getPermissionManager();
+		this.config = config;
 
-        this.registerEvents(plugin);
+		this.registerEvents(plugin);
 
-        this.informPlayers = config.getBoolean("informPlayers", informPlayers);
-        this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
-        this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
-        this.checkMetadata = config.getBoolean("check-metadata", checkMetadata);
-    }
+		this.informPlayers = config.getBoolean("informPlayers", informPlayers);
+		this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
+		this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
+		this.checkMetadata = config.getBoolean("check-metadata", checkMetadata);
+		this.checkItemUse = config.getBoolean("item-use-check", checkItemUse);
+	}
 
-    protected void informPlayer(Player player, String message) {
-        if (this.informPlayers) {
-            player.sendMessage(ChatColor.RED + message);
-        }
-    }
+	protected void informPlayer(Player player, String message) {
+		if (this.informPlayers) {
+			player.sendMessage(ChatColor.RED + message);
+		}
+	}
 
-    protected void informPlayerAboutDenial(Player player) {
-        this.informPlayer(player, this.permissionDenied);
-    }
+	protected void informPlayerAboutDenial(Player player) {
+		this.informPlayer(player, this.permissionDenied);
+	}
 
-    protected String getEntityName(Entity entity) {
-        if (entity instanceof Player) {
-            return "player." + ((Player) entity).getName();
-        } else if (entity instanceof Wolf) {
-            Wolf wolf = (Wolf) entity;
+	protected String getEntityName(Entity entity) {
+		if (entity instanceof Player) {
+			return "player." + ((Player) entity).getName();
+		} else if (entity instanceof Wolf) {
+			Wolf wolf = (Wolf) entity;
 
-            if (wolf.isTamed() && wolf.getOwner() instanceof Player) {
-                return "animal.wolf." + ((Player) wolf.getOwner()).getName();
-            } else {
-                return "animal.wolf";
-            }
-        }
-        
-        // Fixtures for Bukkit dev lazyness
-        if (entity instanceof Ghast){
-            return "monster.ghast";
-        }
-        
-        if (entity instanceof Squid){
-            return "animal.squid";
-        }
-        
-        if (entity instanceof Slime){
-            return "monster.slime";
-        }
-        
-        
-        String entityName = entity.getClass().getSimpleName();
+			if (wolf.isTamed() && wolf.getOwner() instanceof Player) {
+				return "animal.wolf." + ((Player) wolf.getOwner()).getName();
+			} else {
+				return "animal.wolf";
+			}
+		}
 
-        if (entityName.startsWith("Craft")) {
-            entityName = entityName.substring(5).toLowerCase();
-        }
+		// Fixtures for Bukkit dev lazyness
+		if (entity instanceof Ghast) {
+			return "monster.ghast";
+		}
 
-        if (Monster.class.isAssignableFrom(entity.getClass())) {
-            entityName = "monster." + entityName;
-        } else if (Animals.class.isAssignableFrom(entity.getClass())) {
-            entityName = "animal." + entityName;
-        } else if (Projectile.class.isAssignableFrom(entity.getClass())) {
-            entityName = "projectile." + entityName;
-        }
-        
-        return entityName;
-    }
+		if (entity instanceof Squid) {
+			return "animal.squid";
+		}
 
-    protected String getMaterialPermission(String basePermission, Material type){
-        return basePermission + (this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : type.getId() );
-    }
-    
-    protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-        return permissionsManager.has(player,  this.getMaterialPermission(basePermission, type));
-    }
-	
+		if (entity instanceof Slime) {
+			return "monster.slime";
+		}
+
+
+		String entityName = entity.getClass().getSimpleName();
+
+		if (entityName.startsWith("Craft")) {
+			entityName = entityName.substring(5).toLowerCase();
+		}
+
+		if (Monster.class.isAssignableFrom(entity.getClass())) {
+			entityName = "monster." + entityName;
+		} else if (Animals.class.isAssignableFrom(entity.getClass())) {
+			entityName = "animal." + entityName;
+		} else if (Projectile.class.isAssignableFrom(entity.getClass())) {
+			entityName = "projectile." + entityName;
+		}
+
+		return entityName;
+	}
+
+	// Functional programming fuck yeah
+	protected String getMaterialPermission(Material type) {
+		return this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : Integer.toString(type.getId());
+	}
+
+	protected String getItemPermission(ItemStack item) {
+		return this.getMaterialPermission(item.getType()) + (this.checkMetadata ? "." + item.getData().getData() : "");
+	}
+
+	protected String getBlockPermission(Block block) {
+		return this.getMaterialPermission(block.getType()) + (this.checkMetadata ? "." + block.getData() : "");
+	}
+
+	protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
+		return permissionsManager.has(player, basePermission + this.getMaterialPermission(type));
+	}
+
 	protected boolean canInteractWithItem(Player player, String basePermission, ItemStack item) {
-		String permission = this.getMaterialPermission(basePermission, item.getType());
-        
-        if (this.checkMetadata) {
-            permission += "." + item.getData().getData();
-        }
-                
-        return permissionsManager.has(player, permission);
-    }
-    
-    protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
-        String permission = this.getMaterialPermission(basePermission, block.getType());
-        
-        if (this.checkMetadata) {
-            permission += "." + block.getData();
-        }
-                
-        return permissionsManager.has(player, permission);
-    }
+		return permissionsManager.has(player, basePermission + this.getItemPermission(item));
+	}
 
-    private void registerEvents(Plugin plugin) {
-        PluginManager pluginManager = plugin.getServer().getPluginManager();
-        for (Method method : this.getClass().getMethods()) {
-            if (!method.isAnnotationPresent(EventHandler.class)) {
-                continue;
-            }
+	protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
+		return permissionsManager.has(player, basePermission + this.getBlockPermission(block));
+	}
 
-            EventHandler handler = method.getAnnotation(EventHandler.class);
+	private void registerEvents(Plugin plugin) {
+		PluginManager pluginManager = plugin.getServer().getPluginManager();
+		for (Method method : this.getClass().getMethods()) {
+			if (!method.isAnnotationPresent(EventHandler.class)) {
+				continue;
+			}
 
-            if (method.isAnnotationPresent(Toggleable.class)) {
-                Toggleable toggle = method.getAnnotation(Toggleable.class);
-                if (!config.getBoolean(toggle.value(), toggle.byDefault())) {
-                    continue;
-                }
-            }
+			EventHandler handler = method.getAnnotation(EventHandler.class);
 
-            pluginManager.registerEvent(handler.value(), this, this.getEventExecutor(method), Event.Priority.Normal, plugin);
-        }
-    }
+			if (method.isAnnotationPresent(Toggleable.class)) {
+				Toggleable toggle = method.getAnnotation(Toggleable.class);
+				if (!config.getBoolean(toggle.value(), toggle.byDefault())) {
+					continue;
+				}
+			}
 
-    private EventExecutor getEventExecutor(final Method eventHandlerMethod) {
-        return new EventExecutor() {
+			pluginManager.registerEvent(handler.value(), this, this.getEventExecutor(method), Event.Priority.Normal, plugin);
+		}
+	}
 
-            @Override
-            public void execute(Listener listener, Event event) {
-                try {
-                    eventHandlerMethod.invoke(listener, event);
-                } catch (Exception e) {
-                    Logger.getLogger("Minecraft").warning("[Modifyworld] Failed to execute Modifyworld event handler for Event." + event.getEventName());
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
+	private EventExecutor getEventExecutor(final Method eventHandlerMethod) {
+		return new EventExecutor() {
+
+			@Override
+			public void execute(Listener listener, Event event) {
+				try {
+					eventHandlerMethod.invoke(listener, event);
+				} catch (Exception e) {
+					Logger.getLogger("Minecraft").warning("[Modifyworld] Failed to execute Modifyworld event handler for Event." + event.getEventName());
+					e.printStackTrace();
+				}
+			}
+		};
+	}
 }
