@@ -1,7 +1,7 @@
 name: Modifyworld
 main: ru.tehkode.modifyworld.bukkit.Modifyworld
 depend: [ PermissionsEx ]
-version: 1.15
+version: 1.16
 author: t3hk0d3
 website: www.bukkit.org
 description: World modification permission ruleset
