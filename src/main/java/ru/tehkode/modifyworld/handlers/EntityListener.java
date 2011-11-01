@@ -61,16 +61,6 @@ public class EntityListener extends ModifyworldListener {
                         return;
                     }
                 }
-
-                if (edbe instanceof EntityDamageByProjectileEvent && edbe.getDamager() == null) { // Prevent damage taken from dipenser projectile
-                    EntityDamageByProjectileEvent edpe = (EntityDamageByProjectileEvent) edbe;
-
-                    if (!canMessWithEntity(player, "modifyworld.damage.take.", edpe.getProjectile())) {
-                        cancelDamageEvent(player, event);
-                        return;
-                    }
-
-                }
             }
 
         } else if (event.getEntity() instanceof Player) { // player are been damaged by enviroment
