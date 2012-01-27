@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.tehkode</groupId>
     <artifactId>Modifyworld</artifactId>
-    <version>1.16</version>
+    <version>1.18</version>
     <name>Modifyworld</name>
     <url>https://github.com/t3hk0d3/Modifyworld</url>
     <issueManagement>
@@ -45,15 +45,21 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.1-R1</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.16</version>
+            <version>1.18</version>
         </dependency>
     </dependencies>
-    
+	<repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+    </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
