@@ -48,6 +48,7 @@ public class EntityListener extends ModifyworldListener {
             if (edbe.getDamager() instanceof Player) { // Prevent from damaging by player
                 player = (Player) edbe.getDamager();
                 if (!canMessWithEntity(player, "modifyworld.damage.deal.", event.getEntity())) {
+					informPlayerAboutDenial(player);
                     cancelDamageEvent(player, event);
                     return;
                 }
@@ -76,8 +77,7 @@ public class EntityListener extends ModifyworldListener {
     }
 
     protected void cancelDamageEvent(Player player, EntityDamageEvent event) {
-        informPlayerAboutDenial(player);
-        event.setCancelled(true);
+		event.setCancelled(true);
         event.setDamage(0);
     }
 
