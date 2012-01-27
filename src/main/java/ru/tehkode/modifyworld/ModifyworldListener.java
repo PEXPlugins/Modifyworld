@@ -85,35 +85,14 @@ public abstract class ModifyworldListener implements Listener {
 			}
 		}
 
-		// Fixtures for Bukkit dev lazyness
-		if (entity instanceof Ghast) {
-			return "monster.ghast";
+		String entityName = entity.toString().substring(5).toLowerCase();
+		EntityCategory category = EntityCategory.fromEntity(entity);
+
+		if (category == null) {
+			return entityName; // category unknown (ender crystal)
 		}
 
-		if (entity instanceof Squid) {
-			return "animal.squid";
-		}
-
-		if (entity instanceof Slime) {
-			return "monster.slime";
-		}
-
-
-		String entityName = entity.getClass().getSimpleName();
-
-		if (entityName.startsWith("Craft")) {
-			entityName = entityName.substring(5).toLowerCase();
-		}
-
-		if (Monster.class.isAssignableFrom(entity.getClass())) {
-			entityName = "monster." + entityName;
-		} else if (Animals.class.isAssignableFrom(entity.getClass())) {
-			entityName = "animal." + entityName;
-		} else if (Projectile.class.isAssignableFrom(entity.getClass())) {
-			entityName = "projectile." + entityName;
-		}
-
-		return entityName;
+		return category.getNameDot() + entityName;
 	}
 
 	// Functional programming fuck yeah
@@ -143,8 +122,11 @@ public abstract class ModifyworldListener implements Listener {
 
 	private void registerEvents(Plugin plugin) {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
+
+
 		for (Method method : this.getClass().getMethods()) {
 			if (!method.isAnnotationPresent(EventHandler.class)) {
+
 				continue;
 			}
 
@@ -152,6 +134,7 @@ public abstract class ModifyworldListener implements Listener {
 
 			if (method.isAnnotationPresent(Toggleable.class)) {
 				Toggleable toggle = method.getAnnotation(Toggleable.class);
+
 				if (!config.getBoolean(toggle.value(), toggle.byDefault())) {
 					continue;
 				}
