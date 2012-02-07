@@ -99,13 +99,17 @@ public abstract class ModifyworldListener implements Listener {
 	protected String getMaterialPermission(Material type) {
 		return this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : Integer.toString(type.getId());
 	}
-
-	protected String getItemPermission(ItemStack item) {
-		return this.getMaterialPermission(item.getType()) + (this.checkMetadata ? "." + item.getData().getData() : "");
+	
+	protected String getMaterialPermission(Material type, byte metadata) {
+		return this.getMaterialPermission(type) + (metadata > 0 ? ":" + metadata : "");
 	}
-
+	
+	protected String getItemPermission(ItemStack item) {
+		return this.getMaterialPermission(item.getType(), item.getData().getData());
+	}
+	
 	protected String getBlockPermission(Block block) {
-		return this.getMaterialPermission(block.getType()) + (this.checkMetadata ? "." + block.getData() : "");
+		return this.getMaterialPermission(block.getType(), block.getData());
 	}
 
 	protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
@@ -113,11 +117,11 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	protected boolean canInteractWithItem(Player player, String basePermission, ItemStack item) {
-		return permissionsManager.has(player, basePermission + this.getItemPermission(item));
+		return permissionsManager.has(player, basePermission + this.getMaterialPermission(item.getType(), item.getData().getData()));
 	}
 
 	protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
-		return permissionsManager.has(player, basePermission + this.getBlockPermission(block));
+		return permissionsManager.has(player, basePermission + this.getMaterialPermission(block.getType(), block.getData()));
 	}
 
 	private void registerEvents(Plugin plugin) {
