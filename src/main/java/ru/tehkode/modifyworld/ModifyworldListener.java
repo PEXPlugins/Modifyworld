@@ -18,16 +18,13 @@
  */
 package ru.tehkode.modifyworld;
 
-import java.lang.reflect.Method;
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.config.ConfigurationNode;
@@ -43,13 +40,13 @@ public abstract class ModifyworldListener implements Listener {
 	public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
 	protected String permissionDenied = PERMISSION_DENIED;
 	protected PermissionManager permissionsManager;
-	protected ConfigurationNode config;
+	protected ConfigurationSection config;
 	protected boolean informPlayers = false;
 	protected boolean useMaterialNames = true;
 	protected boolean checkMetadata = false;
 	protected boolean checkItemUse = false;
 
-	public ModifyworldListener(Plugin plugin, ConfigurationNode config) {
+	public ModifyworldListener(Plugin plugin, ConfigurationSection config) {
 		this.permissionsManager = PermissionsEx.getPermissionManager();
 		this.config = config;
 
@@ -126,40 +123,6 @@ public abstract class ModifyworldListener implements Listener {
 
 	private void registerEvents(Plugin plugin) {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
-
-
-		for (Method method : this.getClass().getMethods()) {
-			if (!method.isAnnotationPresent(EventHandler.class)) {
-
-				continue;
-			}
-
-			EventHandler handler = method.getAnnotation(EventHandler.class);
-
-			if (method.isAnnotationPresent(Toggleable.class)) {
-				Toggleable toggle = method.getAnnotation(Toggleable.class);
-
-				if (!config.getBoolean(toggle.value(), toggle.byDefault())) {
-					continue;
-				}
-			}
-
-			pluginManager.registerEvent(handler.value(), this, this.getEventExecutor(method), Event.Priority.Normal, plugin);
-		}
-	}
-
-	private EventExecutor getEventExecutor(final Method eventHandlerMethod) {
-		return new EventExecutor() {
-
-			@Override
-			public void execute(Listener listener, Event event) {
-				try {
-					eventHandlerMethod.invoke(listener, event);
-				} catch (Exception e) {
-					Logger.getLogger("Minecraft").warning("[Modifyworld] Failed to execute Modifyworld event handler for Event." + event.getEventName());
-					e.printStackTrace();
-				}
-			}
-		};
+		pluginManager.registerEvents(this, plugin);
 	}
 }

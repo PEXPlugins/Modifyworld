@@ -18,13 +18,13 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.ConfigurationNode;
-import ru.tehkode.modifyworld.EventHandler;
 import ru.tehkode.modifyworld.ModifyworldListener;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
@@ -35,11 +35,11 @@ import ru.tehkode.permissions.PermissionUser;
  */
 public class EntityListener extends ModifyworldListener {
 
-    public EntityListener(Plugin plugin, ConfigurationNode config) {
+    public EntityListener(Plugin plugin, ConfigurationSection config) {
         super(plugin, config);
-    }
+	}
 
-    @EventHandler(Type.ENTITY_DAMAGE)
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
@@ -81,7 +81,7 @@ public class EntityListener extends ModifyworldListener {
         event.setDamage(0);
     }
 
-    @EventHandler(Type.ENTITY_TAME)
+    @EventHandler
     public void onEntityTame(EntityTameEvent event) {
         if (!(event.getOwner() instanceof Player)) {
             return;
@@ -95,7 +95,7 @@ public class EntityListener extends ModifyworldListener {
         }
     }
 
-    @EventHandler(Type.ENTITY_TARGET)
+    @EventHandler
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.getTarget() instanceof Player) {
             Player player = (Player) event.getTarget();

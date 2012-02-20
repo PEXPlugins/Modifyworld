@@ -19,15 +19,14 @@
 package ru.tehkode.modifyworld.handlers;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.*;
 import org.bukkit.event.painting.PaintingBreakByEntityEvent;
 import org.bukkit.event.painting.PaintingBreakEvent;
 import org.bukkit.event.painting.PaintingPlaceEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.config.ConfigurationNode;
-import ru.tehkode.modifyworld.EventHandler;
 import ru.tehkode.modifyworld.ModifyworldListener;
 
 /**
@@ -36,11 +35,11 @@ import ru.tehkode.modifyworld.ModifyworldListener;
  */
 public class BlockListener extends ModifyworldListener {
 
-	public BlockListener(Plugin plugin, ConfigurationNode config) {
+	public BlockListener(Plugin plugin, ConfigurationSection config) {
 		super(plugin, config);
 	}
 
-	@EventHandler(Type.BLOCK_BREAK)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
@@ -48,7 +47,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler(Type.BLOCK_PLACE)
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
@@ -56,7 +55,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler(Type.PAINTING_BREAK)
+	@EventHandler
 	public void onPaintingBreak(PaintingBreakEvent event) {
 		if (!(event instanceof PaintingBreakByEntityEvent)) {
 			return;
@@ -71,7 +70,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler(Type.PAINTING_PLACE)
+	@EventHandler
 	public void onPaintingPlace(PaintingPlaceEvent event) {
 		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
 			informPlayerAboutDenial(event.getPlayer());

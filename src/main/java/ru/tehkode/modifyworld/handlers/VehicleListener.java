@@ -18,14 +18,13 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.config.ConfigurationNode;
-import ru.tehkode.modifyworld.EventHandler;
 import ru.tehkode.modifyworld.ModifyworldListener;
 
 /**
@@ -34,11 +33,11 @@ import ru.tehkode.modifyworld.ModifyworldListener;
  */
 public class VehicleListener extends ModifyworldListener {
 
-    public VehicleListener(Plugin plugin, ConfigurationNode config) {
+    public VehicleListener(Plugin plugin, ConfigurationSection config) {
         super(plugin, config);
     }
 
-    @EventHandler(Type.VEHICLE_DAMAGE)
+    @EventHandler
     public void onVehicleDamage(VehicleDamageEvent event) {
         if (!(event.getAttacker() instanceof Player)) {
             return;
@@ -51,7 +50,7 @@ public class VehicleListener extends ModifyworldListener {
         }
     }
 
-    @EventHandler(Type.VEHICLE_ENTER)
+    @EventHandler
     public void onVehicleEnter(VehicleEnterEvent event) {
         if (!(event.getEntered() instanceof Player)) {
             return;
@@ -64,7 +63,7 @@ public class VehicleListener extends ModifyworldListener {
         }
     }
 
-    @EventHandler(Type.VEHICLE_COLLISION_ENTITY)
+    @EventHandler
     public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
