@@ -18,6 +18,7 @@
  */
 package ru.tehkode.modifyworld.bukkit;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -72,10 +73,16 @@ public class Modifyworld extends JavaPlugin {
 		} else {
 			logger.info("[Modifyworld] Modifyworld disabled. Check config.yml!");
 			this.getPluginLoader().disablePlugin(this);
+			return;
 		}
 		
 		try {
-			config.save("config.yml");
+			File configFile = new File(this.getDataFolder(), "config.yml");
+			if(!configFile.exists()) {
+				configFile.mkdirs();
+			}
+			
+			config.save(configFile);
 		} catch (IOException e) {
 			logger.severe("[Modifyworld] Can't save new configuration file!");
 		}
