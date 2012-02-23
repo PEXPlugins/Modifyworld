@@ -76,16 +76,7 @@ public class Modifyworld extends JavaPlugin {
 			return;
 		}
 		
-		try {
-			File configFile = new File(this.getDataFolder(), "config.yml");
-			if(!configFile.exists()) {
-				configFile.mkdirs();
-			}
-			
-			config.save(configFile);
-		} catch (IOException e) {
-			logger.severe("[Modifyworld] Can't save new configuration file!");
-		}
+		this.saveConfig();
 	}
 	
 	@Override
