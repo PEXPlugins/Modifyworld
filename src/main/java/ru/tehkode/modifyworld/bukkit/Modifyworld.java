@@ -73,7 +73,6 @@ public class Modifyworld extends JavaPlugin {
 		} else {
 			logger.info("[Modifyworld] Modifyworld disabled. Check config.yml!");
 			this.getPluginLoader().disablePlugin(this);
-			return;
 		}
 		
 		this.saveConfig();
