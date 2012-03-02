@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
 import org.bukkit.event.painting.PaintingBreakByEntityEvent;
 import org.bukkit.event.painting.PaintingBreakEvent;
@@ -39,7 +40,7 @@ public class BlockListener extends ModifyworldListener {
 		super(plugin, config);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
@@ -47,7 +48,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
 			informPlayerAboutDenial(event.getPlayer());
@@ -55,7 +56,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPaintingBreak(PaintingBreakEvent event) {
 		if (!(event instanceof PaintingBreakByEntityEvent)) {
 			return;
@@ -70,7 +71,7 @@ public class BlockListener extends ModifyworldListener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPaintingPlace(PaintingPlaceEvent event) {
 		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
 			informPlayerAboutDenial(event.getPlayer());
