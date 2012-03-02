@@ -31,7 +31,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import ru.tehkode.modifyworld.ModifyworldListener;
-import ru.tehkode.modifyworld.Toggleable;
 import ru.tehkode.permissions.PermissionUser;
 
 /**
@@ -74,8 +73,11 @@ public class PlayerListener extends ModifyworldListener {
 	}
 
 	@EventHandler
-	@Toggleable("whitelist")
 	public void onPlayerPreLogin(PlayerPreLoginEvent event) {
+		if (!enableWhitelist) {
+			return;
+		}
+		
 		PermissionUser user = this.permissionsManager.getUser(event.getName());
 
 		if (user != null && !user.has("modifyworld.login", Bukkit.getServer().getWorlds().get(0).getName())) {
@@ -85,8 +87,11 @@ public class PlayerListener extends ModifyworldListener {
 	}
 
 	@EventHandler
-	@Toggleable("whitelist")
 	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (!enableWhitelist) {
+			return;
+		}
+		
 		PermissionUser user = this.permissionsManager.getUser(event.getPlayer());
 
 		if (user != null && !user.has("modifyworld.login", Bukkit.getServer().getWorlds().get(0).getName())) {

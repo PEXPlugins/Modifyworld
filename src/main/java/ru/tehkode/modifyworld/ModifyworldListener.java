@@ -45,7 +45,8 @@ public abstract class ModifyworldListener implements Listener {
 	protected boolean useMaterialNames = true;
 	protected boolean checkMetadata = false;
 	protected boolean checkItemUse = false;
-
+	protected boolean enableWhitelist = false;
+	
 	public ModifyworldListener(Plugin plugin, ConfigurationSection config) {
 		this.permissionsManager = PermissionsEx.getPermissionManager();
 		this.config = config;
@@ -57,6 +58,7 @@ public abstract class ModifyworldListener implements Listener {
 		this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
 		this.checkMetadata = config.getBoolean("check-metadata", checkMetadata);
 		this.checkItemUse = config.getBoolean("item-use-check", checkItemUse);
+		this.enableWhitelist = config.getBoolean("whitelist", enableWhitelist);
 	}
 
 	protected void informPlayer(Player player, String message) {
