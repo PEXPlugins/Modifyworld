@@ -50,7 +50,7 @@ public class PlayerListener extends ModifyworldListener {
 	public PlayerListener(Plugin plugin, ConfigurationSection config) {
 		super(plugin, config);
 
-		this.whitelistKickMessage = config.getString("messages.whitelist", this.whitelistKickMessage);
+		this.whitelistKickMessage = config.getString("messages.whitelistMessage", this.whitelistKickMessage);
 		this.prohibitedItemMessage = config.getString("messages.prohibitedItem", this.prohibitedItemMessage);
 		this.checkInventory = config.getBoolean("itemRestrictions", this.checkInventory);
 		this.dropRestrictedItem = config.getBoolean("drop-restricted-item", this.dropRestrictedItem);
