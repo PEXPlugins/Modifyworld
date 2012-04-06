@@ -18,8 +18,6 @@
  */
 package ru.tehkode.modifyworld.bukkit;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
