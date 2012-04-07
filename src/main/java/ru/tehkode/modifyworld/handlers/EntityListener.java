@@ -69,7 +69,7 @@ public class EntityListener extends ModifyworldListener {
 
 			String cause = event.getCause().name().toLowerCase().replace("_", "");
 
-			if (!permissionsManager.has(player, "modifyworld.damage.take." + cause)) {
+			if (!player.hasPermission("modifyworld.damage.take." + cause)) {
 				cancelDamageEvent(player, event);
 				return;
 			}
@@ -89,7 +89,7 @@ public class EntityListener extends ModifyworldListener {
 
 		Player player = (Player) event.getOwner();
 
-		if (!permissionsManager.has(player, "modifyworld.tame." + getEntityName(event.getEntity()))) {
+		if (!player.hasPermission("modifyworld.tame." + getEntityName(event.getEntity()))) {
 			event.setCancelled(true);
 			informPlayerAboutDenial(player);
 		}
@@ -99,7 +99,7 @@ public class EntityListener extends ModifyworldListener {
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (event.getTarget() instanceof Player) {
 			Player player = (Player) event.getTarget();
-			if (!permissionsManager.has(player, "modifyworld.mobtarget." + getEntityName(event.getEntity()))) {
+			if (!player.hasPermission("modifyworld.mobtarget." + getEntityName(event.getEntity()))) {
 				event.setCancelled(true);
 			}
 		}
@@ -114,14 +114,14 @@ public class EntityListener extends ModifyworldListener {
 			}
 
 			for (PermissionGroup group : entityUser.getGroups()) {
-				if (permissionsManager.has(player, basePermission + "group." + group.getName())) {
+				if (player.hasPermission(basePermission + "group." + group.getName())) {
 					return true;
 				}
 			}
 
-			return permissionsManager.has(player, basePermission + "player." + entityUser.getName());
+			return player.hasPermission(basePermission + "player." + entityUser.getName());
 		}
 
-		return permissionsManager.has(player, basePermission + getEntityName(entity));
+		return player.hasPermission(basePermission + getEntityName(entity));
 	}
 }

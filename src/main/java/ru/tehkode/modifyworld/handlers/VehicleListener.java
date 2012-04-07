@@ -45,7 +45,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getAttacker();
-		if (!permissionsManager.has(player, "modifyworld.vehicle.destroy")) {
+		if (!player.hasPermission("modifyworld.vehicle.destroy")) {
 			informPlayerAboutDenial(player);
 			event.setCancelled(true);
 		}
@@ -58,7 +58,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getEntered();
-		if (!permissionsManager.has(player, "modifyworld.vehicle.enter")) {
+		if (!player.hasPermission("modifyworld.vehicle.enter")) {
 			informPlayerAboutDenial(player);
 			event.setCancelled(true);
 		}
@@ -71,7 +71,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getEntity();
-		if (!permissionsManager.has(player, "modifyworld.vehicle.collide")) {
+		if (!player.hasPermission("modifyworld.vehicle.collide")) {
 			event.setCancelled(true);
 			event.setCollisionCancelled(true);
 			event.setPickupCancelled(true);

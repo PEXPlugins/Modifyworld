@@ -109,19 +109,18 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-		return permissionsManager.has(player, basePermission + this.getMaterialPermission(type));
+		return player.hasPermission(basePermission + this.getMaterialPermission(type));
 	}
 
 	protected boolean canInteractWithItem(Player player, String basePermission, ItemStack item) {
-		return permissionsManager.has(player, basePermission + this.getMaterialPermission(item.getType(), item.getData().getData()));
+		return player.hasPermission(basePermission + this.getMaterialPermission(item.getType(), item.getData().getData()));
 	}
 
 	protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
-		return permissionsManager.has(player, basePermission + this.getMaterialPermission(block.getType(), block.getData()));
+		return player.hasPermission(basePermission + this.getMaterialPermission(block.getType(), block.getData()));
 	}
 
 	private void registerEvents(Plugin plugin) {
-		PluginManager pluginManager = plugin.getServer().getPluginManager();
-		pluginManager.registerEvents(this, plugin);
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 }
