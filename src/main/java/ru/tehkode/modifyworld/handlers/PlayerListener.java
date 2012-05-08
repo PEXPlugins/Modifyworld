@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
@@ -60,7 +61,7 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerSneak(PlayerToggleSneakEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (event.isSneaking() && !player.hasPermission("modifyworld.sneak")) {
 			event.setCancelled(true);
 			event.getPlayer().setSneaking(false);
@@ -70,7 +71,7 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerSprint(PlayerToggleSprintEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (event.isSprinting() && !player.hasPermission("modifyworld.sprint")) {
 			event.setCancelled(true);
 			event.getPlayer().setSprinting(false);
@@ -84,13 +85,13 @@ public class PlayerListener extends ModifyworldListener {
 		}
 
 		PermissionUser user = this.permissionsManager.getUser(event.getName());
-		
+
 		String worldName = Bukkit.getServer().getWorlds().get(0).getName();
 
 		if (user != null && !user.has("modifyworld.login", worldName)) {
 			String whiteListMessage = user.getOption("kick-message", worldName, this.whitelistKickMessage);
-			
-			event.disallow(PlayerPreLoginEvent.Result.KICK_WHITELIST,  whiteListMessage);
+
+			event.disallow(PlayerPreLoginEvent.Result.KICK_WHITELIST, whiteListMessage);
 			Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
 		}
 	}
@@ -102,12 +103,12 @@ public class PlayerListener extends ModifyworldListener {
 		}
 
 		PermissionUser user = this.permissionsManager.getUser(event.getPlayer());
-		
+
 		String worldName = Bukkit.getServer().getWorlds().get(0).getName();
 
 		if (user != null && !user.has("modifyworld.login", worldName)) {
 			String whiteListMessage = user.getOption("kick-message", worldName, this.whitelistKickMessage);
-			
+
 			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, whiteListMessage);
 			Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
 		}
@@ -212,7 +213,7 @@ public class PlayerListener extends ModifyworldListener {
 		if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
 			return;
 		}
-		
+
 		Player player = event.getPlayer();
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
@@ -227,6 +228,14 @@ public class PlayerListener extends ModifyworldListener {
 		if (!event.isCancelled() && !canInteractWithBlock(player, "modifyworld.blocks.interact.", event.getClickedBlock())) {
 			informPlayerAboutDenial(player);
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onItemEnchant(EnchantItemEvent event) {
+		if (!canInteractWithItem(event.getEnchanter(), "modifyworld.items.enchant.", event.getItem())){
+			event.setCancelled(true);
+			informPlayerAboutDenial(event.getEnchanter());
 		}
 	}
 
