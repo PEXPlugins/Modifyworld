@@ -28,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -238,7 +239,17 @@ public class PlayerListener extends ModifyworldListener {
 			informPlayerAboutDenial(event.getEnchanter());
 		}
 	}
-
+	
+	@EventHandler(priority = EventPriority.LOW)
+	public void onItemCraft(CraftItemEvent event) {
+		Player player = (Player)event.getWhoClicked();
+		
+		if (!canInteractWithItem(player, "modifyworld.items.craft.", event.getRecipe().getResult())){
+			event.setCancelled(true);
+			informPlayerAboutDenial(player);
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		Player player = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
