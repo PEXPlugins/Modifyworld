@@ -189,7 +189,7 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		if (this.checkItemUse) {
-			if (!event.getPlayer().hasPermission("modifyworld.item.use." + getItemPermission(event.getPlayer().getItemInHand()) + ".on.entity." + getEntityName(event.getRightClicked()))) {
+			if (!event.getPlayer().hasPermission("modifyworld.items.use." + getItemPermission(event.getPlayer().getItemInHand()) + ".on.entity." + getEntityName(event.getRightClicked()))) {
 				event.setCancelled(true);
 				informPlayerAboutDenial(event.getPlayer());
 			}
@@ -218,7 +218,7 @@ public class PlayerListener extends ModifyworldListener {
 		Player player = event.getPlayer();
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
-			if (!player.hasPermission("modifyworld.item.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
+			if (!player.hasPermission("modifyworld.items.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
 				event.setCancelled(true);
 				informPlayerAboutDenial(player);
 			}
