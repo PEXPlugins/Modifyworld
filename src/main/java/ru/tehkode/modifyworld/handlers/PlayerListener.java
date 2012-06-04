@@ -21,8 +21,10 @@ package ru.tehkode.modifyworld.handlers;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -210,12 +212,30 @@ public class PlayerListener extends ModifyworldListener {
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { // item restriction check
 			this.checkPlayerInventory(event.getPlayer());
 		}
+		
+		Player player = event.getPlayer();
 
+		if (action == Action.RIGHT_CLICK_AIR) { //RIGHT_CLICK_AIR is cancelled by default.
+			switch (player.getItemInHand().getType()) {
+				case POTION: //Only check splash potions.
+					if ((player.getItemInHand().getDurability() & 0x4000) != 0x4000) break;
+				case EGG:
+				case SNOW_BALL:
+				case EXP_BOTTLE:
+					if (!canInteractWithItem(player, "modifyworld.items.throw.", player.getItemInHand())) {
+						informPlayerAboutDenial(player);
+						event.setUseItemInHand(Result.DENY);
+						//Denying a potion works fine, but the client needs to be updated because it already reduced the item. 
+						if (player.getItemInHand().getType() == Material.POTION)
+							event.getPlayer().updateInventory();
+					}
+					return;
+			}
+		}
+		
 		if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
 			return;
 		}
-
-		Player player = event.getPlayer();
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
 			if (!player.hasPermission("modifyworld.item.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
