@@ -218,7 +218,7 @@ public class PlayerListener extends ModifyworldListener {
 		Player player = event.getPlayer();
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
-			if (!player.hasPermission("modifyworld.item.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
+			if (!player.hasPermission("modifyworld.items.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
 				event.setCancelled(true);
 				informPlayerAboutDenial(player);
 			}
