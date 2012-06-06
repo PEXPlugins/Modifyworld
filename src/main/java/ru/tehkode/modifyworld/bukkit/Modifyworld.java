@@ -94,6 +94,9 @@ public class Modifyworld extends JavaPlugin {
 		config.set("itemRestrictions", pexConfig.getBoolean("permissions.modifyworld.itemRestrictions", false));
 		config.set("informPlayers", pexConfig.getBoolean("permissions.informplayers.modifyworld", false));
 		config.set("whitelist", pexConfig.getBoolean("permissions.modifyworld.whitelist", false));
+		config.set("use-material-names", pexConfig.getBoolean("permissions.modifyworld.use-material-names", true));
+		config.set("drop-restricted-item", pexConfig.getBoolean("permissions.modifyworld.drop-restricted-item", false));
+		config.set("item-use-check", pexConfig.getBoolean("permissions.modifyworld.item-use-check", false));
 
 		// Messages
 		config.set("messages.whitelistMessage", pexConfig.getString("permissions.modifyworld.whitelistMessage", PlayerListener.WHITELIST_MESSAGE));
