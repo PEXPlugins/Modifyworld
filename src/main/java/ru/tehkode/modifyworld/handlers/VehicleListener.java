@@ -27,6 +27,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.plugin.Plugin;
 import ru.tehkode.modifyworld.ModifyworldListener;
+import ru.tehkode.modifyworld.PlayerInformer;
 
 /**
  *
@@ -34,8 +35,8 @@ import ru.tehkode.modifyworld.ModifyworldListener;
  */
 public class VehicleListener extends ModifyworldListener {
 
-	public VehicleListener(Plugin plugin, ConfigurationSection config) {
-		super(plugin, config);
+	public VehicleListener(Plugin plugin, ConfigurationSection config, PlayerInformer informer) {
+		super(plugin, config, informer);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -45,8 +46,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getAttacker();
-		if (!player.hasPermission("modifyworld.vehicle.destroy")) {
-			informPlayerAboutDenial(player);
+		if (permissionDenied(player, "modifyworld.vehicle.destroy", event.getVehicle())) {
 			event.setCancelled(true);
 		}
 	}
@@ -58,8 +58,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getEntered();
-		if (!player.hasPermission("modifyworld.vehicle.enter")) {
-			informPlayerAboutDenial(player);
+		if (permissionDenied(player, "modifyworld.vehicle.enter", event.getVehicle())) {
 			event.setCancelled(true);
 		}
 	}
@@ -71,7 +70,7 @@ public class VehicleListener extends ModifyworldListener {
 		}
 
 		Player player = (Player) event.getEntity();
-		if (!player.hasPermission("modifyworld.vehicle.collide")) {
+		if (_permissionDenied(player, "modifyworld.vehicle.collide", event.getVehicle())) {
 			event.setCancelled(true);
 			event.setCollisionCancelled(true);
 			event.setPickupCancelled(true);

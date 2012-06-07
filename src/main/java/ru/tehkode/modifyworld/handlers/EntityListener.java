@@ -18,7 +18,6 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,8 +25,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.configuration.ConfigurationSection;
 import ru.tehkode.modifyworld.ModifyworldListener;
-import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.modifyworld.PlayerInformer;
 
 /**
  *
@@ -35,8 +33,8 @@ import ru.tehkode.permissions.PermissionUser;
  */
 public class EntityListener extends ModifyworldListener {
 
-	public EntityListener(Plugin plugin, ConfigurationSection config) {
-		super(plugin, config);
+	public EntityListener(Plugin plugin, ConfigurationSection config, PlayerInformer informer) {
+		super(plugin, config, informer);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -47,8 +45,7 @@ public class EntityListener extends ModifyworldListener {
 			Player player;
 			if (edbe.getDamager() instanceof Player) { // Prevent from damaging by player
 				player = (Player) edbe.getDamager();
-				if (!canMessWithEntity(player, "modifyworld.damage.deal.", event.getEntity())) {
-					informPlayerAboutDenial(player);
+				if (permissionDenied(player, "modifyworld.damage.deal", event.getEntity())) {
 					cancelDamageEvent(player, event);
 					return;
 				}
@@ -57,7 +54,7 @@ public class EntityListener extends ModifyworldListener {
 			if (edbe.getEntity() instanceof Player) {
 				player = (Player) edbe.getEntity();
 				if (edbe.getDamager() != null) { // Prevent from taking damage by entity
-					if (!canMessWithEntity(player, "modifyworld.damage.take.", edbe.getDamager())) {
+					if (_permissionDenied(player, "modifyworld.damage.take", edbe.getDamager())) {
 						cancelDamageEvent(player, event);
 						return;
 					}
@@ -67,9 +64,7 @@ public class EntityListener extends ModifyworldListener {
 		} else if (event.getEntity() instanceof Player) { // player are been damaged by enviroment
 			Player player = (Player) event.getEntity();
 
-			String cause = event.getCause().name().toLowerCase().replace("_", "");
-
-			if (!player.hasPermission("modifyworld.damage.take." + cause)) {
+			if (_permissionDenied(player, "modifyworld.damage.take",  event.getCause().name().toLowerCase().replace("_", ""))) {
 				cancelDamageEvent(player, event);
 				return;
 			}
@@ -89,9 +84,8 @@ public class EntityListener extends ModifyworldListener {
 
 		Player player = (Player) event.getOwner();
 
-		if (!player.hasPermission("modifyworld.tame." + getEntityName(event.getEntity()))) {
+		if (permissionDenied(player, "modifyworld.tame", event.getEntity())) {
 			event.setCancelled(true);
-			informPlayerAboutDenial(player);
 		}
 	}
 
@@ -99,29 +93,11 @@ public class EntityListener extends ModifyworldListener {
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (event.getTarget() instanceof Player) {
 			Player player = (Player) event.getTarget();
-			if (!player.hasPermission("modifyworld.mobtarget." + getEntityName(event.getEntity()))) {
+			if (_permissionDenied(player, "modifyworld.mobtarget",  event.getEntity())) {
 				event.setCancelled(true);
 			}
 		}
 	}
 
-	protected boolean canMessWithEntity(Player player, String basePermission, Entity entity) {
-		if (entity instanceof Player) {
-			PermissionUser entityUser = permissionsManager.getUser(((Player) entity).getName());
-
-			if (entityUser == null) {
-				return false;
-			}
-
-			for (PermissionGroup group : entityUser.getGroups()) {
-				if (player.hasPermission(basePermission + "group." + group.getName())) {
-					return true;
-				}
-			}
-
-			return player.hasPermission(basePermission + "player." + entityUser.getName());
-		}
-
-		return player.hasPermission(basePermission + getEntityName(entity));
-	}
+	
 }

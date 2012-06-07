@@ -1,0 +1,28 @@
+item-restrictions: false
+inform-players: false
+whitelist: false
+use-material-names: true
+drop-restricted-item: false
+item-use-check: false
+messages:
+  message-format: '&f[&2Modifyworld&f]&4 %s'
+  default-message: Sorry, you don't have enough permissions - $permission
+  modifyworld.items.use: Stop, &a$1&4 won't fit into &a$3
+  modifyworld.login: You are not allowed to join this server. Goodbye!
+  modifyworld.blocks.interact: You are too jelly for &2$1
+  modifyworld.blocks.place: This is wrong place for &a$1
+  modifyworld.blocks.destroy: '&a$1&4 is tough for you'
+  modifyworld.damage.deal: Your level is too low for &5$1
+  modifyworld.chat: Your mouth is too dry
+  modifyworld.chat.private: Listener is deaf :(
+  modifyworld.items.have: Prohibited item &a$1&4 has been removed from your inventory.
+  modifyworld.items.drop: This is indecent to scatter &a$1&4 around
+  modifyworld.items.craft: Sorry, but &a$1&4 is too complicated
+  modifyworld.items.enchant: Sorry, &a$1&4 is too dangerous
+  modifyworld.vehicle.enter.boat: You are too heavy for this &a$1
+  modifyworld.vehicle.enter.minecart: Sorry, but &a$1&4 is too small
+  modifyworld.vehicle.destroy: This &a$1&4 is legal property of &bUnited States of America
+  modifyworld.tame: This &a$1&4 is too ferocious
+  modifyworld.bucket.fill: This bucket is holey
+  modifyworld.bucket.empty: You suddenly realized you still need &a$1
+  modifyworld.usebeds: You can't sleep yet, there are monsters nearby

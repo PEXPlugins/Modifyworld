@@ -19,8 +19,6 @@
 package ru.tehkode.modifyworld.handlers;
 
 import java.util.logging.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -35,8 +33,9 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 import ru.tehkode.modifyworld.ModifyworldListener;
-import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.modifyworld.PlayerInformer;
 
 /**
  *
@@ -44,19 +43,13 @@ import ru.tehkode.permissions.PermissionUser;
  */
 public class PlayerListener extends ModifyworldListener {
 
-	public final static String WHITELIST_MESSAGE = "You are not allowed to join this server. Goodbye!";
-	public final static String PROHIBITED_ITEM = "You have prohibited item \"%s\".";
 	protected boolean checkInventory = false;
 	protected boolean dropRestrictedItem = false;
-	protected String whitelistKickMessage = WHITELIST_MESSAGE;
-	protected String prohibitedItemMessage = PROHIBITED_ITEM;
 
-	public PlayerListener(Plugin plugin, ConfigurationSection config) {
-		super(plugin, config);
+	public PlayerListener(Plugin plugin, ConfigurationSection config, PlayerInformer informer) {
+		super(plugin, config, informer);
 
-		this.whitelistKickMessage = config.getString("messages.whitelistMessage", this.whitelistKickMessage);
-		this.prohibitedItemMessage = config.getString("messages.prohibitedItem", this.prohibitedItemMessage);
-		this.checkInventory = config.getBoolean("itemRestrictions", this.checkInventory);
+		this.checkInventory = config.getBoolean("item-restrictions", this.checkInventory);
 		this.dropRestrictedItem = config.getBoolean("drop-restricted-item", this.dropRestrictedItem);
 
 	}
@@ -65,7 +58,7 @@ public class PlayerListener extends ModifyworldListener {
 	public void onPlayerSneak(PlayerToggleSneakEvent event) {
 		Player player = event.getPlayer();
 
-		if (event.isSneaking() && !player.hasPermission("modifyworld.sneak")) {
+		if (event.isSneaking() && _permissionDenied(player, "modifyworld.sneak")) {
 			event.setCancelled(true);
 			event.getPlayer().setSneaking(false);
 		}
@@ -75,29 +68,12 @@ public class PlayerListener extends ModifyworldListener {
 	public void onPlayerSprint(PlayerToggleSprintEvent event) {
 		Player player = event.getPlayer();
 
-		if (event.isSprinting() && !player.hasPermission("modifyworld.sprint")) {
+		if (event.isSprinting() && _permissionDenied(player, "modifyworld.sprint")) {
 			event.setCancelled(true);
 			event.getPlayer().setSprinting(false);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerPreLogin(PlayerPreLoginEvent event) {
-		if (!enableWhitelist) {
-			return;
-		}
-
-		PermissionUser user = this.permissionsManager.getUser(event.getName());
-
-		String worldName = Bukkit.getServer().getWorlds().get(0).getName();
-
-		if (user != null && !user.has("modifyworld.login", worldName)) {
-			String whiteListMessage = user.getOption("kick-message", worldName, this.whitelistKickMessage);
-
-			event.disallow(PlayerPreLoginEvent.Result.KICK_WHITELIST, whiteListMessage);
-			Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
-		}
-	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLogin(PlayerLoginEvent event) {
@@ -105,22 +81,18 @@ public class PlayerListener extends ModifyworldListener {
 			return;
 		}
 
-		PermissionUser user = this.permissionsManager.getUser(event.getPlayer());
-
-		String worldName = Bukkit.getServer().getWorlds().get(0).getName();
-
-		if (user != null && !user.has("modifyworld.login", worldName)) {
-			String whiteListMessage = user.getOption("kick-message", worldName, this.whitelistKickMessage);
-
-			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, whiteListMessage);
-			Logger.getLogger("Minecraft").info("Player \"" + user.getName() + "\" were kicked by Modifyworld - lack of modifyworld.login permission");
+		Player player = event.getPlayer();
+		
+		if (_permissionDenied(player, "modifyworld.login")) {
+			// String whiteListMessage = user.getOption("kick-message", worldName, this.whitelistKickMessage);
+			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, informer.getMessage(player, "modifyworld.login"));
+			Logger.getLogger("Minecraft").info("Player \"" + player.getName() + "\" were kicked by Modifyworld - lack of 'modifyworld.login' permission");
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-		if (!event.getPlayer().hasPermission("modifyworld.usebeds")) {
-			informPlayer(event.getPlayer(), ChatColor.RED + "Sorry, you don't have enough permissions");
+		if (permissionDenied(event.getPlayer(), "modifyworld.usebeds")) {
 			event.setCancelled(true);
 		}
 	}
@@ -128,8 +100,7 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
 		String bucketName = event.getBucket().toString().toLowerCase().replace("_bucket", ""); // WATER_BUCKET -> water
-		if (!event.getPlayer().hasPermission("modifyworld.bucket.empty." + bucketName)) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.bucket.empty", bucketName)) {
 			event.setCancelled(true);
 		}
 	}
@@ -137,31 +108,29 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
 		String materialName = event.getBlockClicked().getType().toString().toLowerCase().replace("stationary_", ""); // STATIONARY_WATER -> water
-		if (!event.getPlayer().hasPermission("modifyworld.bucket.fill." + materialName)) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.bucket.fill", materialName)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().startsWith("/tell") && !event.getPlayer().hasPermission("modifyworld.chat.private")) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (event.getMessage().startsWith("/tell") && permissionDenied(event.getPlayer(), "modifyworld.chat.private")) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChat(PlayerChatEvent event) {
-		if (!event.getPlayer().hasPermission("modifyworld.chat")) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.chat")) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (!canInteractWithItem(event.getPlayer(), "modifyworld.items.pickup.", event.getItem().getItemStack())) {
+		// No inform to avoid spam
+		if (_permissionDenied(event.getPlayer(), "modifyworld.items.pickup", event.getItem().getItemStack())) {
 			event.setCancelled(true);
 		}
 
@@ -170,16 +139,10 @@ public class PlayerListener extends ModifyworldListener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (!canInteractWithItem(event.getPlayer(), "modifyworld.items.drop.", event.getItemDrop().getItemStack())) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.items.drop", event.getItemDrop().getItemStack())) {
 			event.setCancelled(true);
 		}
 
-		this.checkPlayerInventory(event.getPlayer());
-	}
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void onInventoryOpen(PlayerInventoryEvent event) {
 		this.checkPlayerInventory(event.getPlayer());
 	}
 
@@ -191,17 +154,15 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		if (this.checkItemUse) {
-			if (!event.getPlayer().hasPermission("modifyworld.items.use." + getItemPermission(event.getPlayer().getItemInHand()) + ".on.entity." + getEntityName(event.getRightClicked()))) {
+			if (permissionDenied(event.getPlayer(), "modifyworld.items.use", event.getPlayer().getItemInHand(), "on.entity", event.getRightClicked())) {
 				event.setCancelled(true);
-				informPlayerAboutDenial(event.getPlayer());
 			}
 
 			return;
 		}
 
-		if (!event.isCancelled() && !event.getPlayer().hasPermission("modifyworld.interact." + getEntityName(event.getRightClicked()))) {
+		if (!event.isCancelled() && permissionDenied(event.getPlayer(), "modifyworld.interact", event.getRightClicked())) {
 			event.setCancelled(true);
-			informPlayerAboutDenial(event.getPlayer());
 		}
 	}
 
@@ -212,64 +173,62 @@ public class PlayerListener extends ModifyworldListener {
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { // item restriction check
 			this.checkPlayerInventory(event.getPlayer());
 		}
-		
+
 		Player player = event.getPlayer();
 
 		if (action == Action.RIGHT_CLICK_AIR) { //RIGHT_CLICK_AIR is cancelled by default.
 			switch (player.getItemInHand().getType()) {
 				case POTION: //Only check splash potions.
-					if ((player.getItemInHand().getDurability() & 0x4000) != 0x4000) break;
+					if ((player.getItemInHand().getDurability() & 0x4000) != 0x4000) {
+						break;
+					}
 				case EGG:
 				case SNOW_BALL:
 				case EXP_BOTTLE:
-					if (!canInteractWithItem(player, "modifyworld.items.throw.", player.getItemInHand())) {
-						informPlayerAboutDenial(player);
+					if (permissionDenied(player, "modifyworld.items.throw", player.getItemInHand())) {
 						event.setUseItemInHand(Result.DENY);
 						//Denying a potion works fine, but the client needs to be updated because it already reduced the item. 
-						if (player.getItemInHand().getType() == Material.POTION)
+						if (player.getItemInHand().getType() == Material.POTION) {
 							event.getPlayer().updateInventory();
+						}
 					}
 					return;
 			}
 		}
-		
+
 		if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
 			return;
 		}
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
-			if (!player.hasPermission("modifyworld.items.use." + getItemPermission(player.getItemInHand()) + ".on.block." + getBlockPermission(event.getClickedBlock()))) {
+			if (permissionDenied(event.getPlayer(), "modifyworld.items.use", player.getItemInHand(), "on.block", event.getClickedBlock())) {
 				event.setCancelled(true);
-				informPlayerAboutDenial(player);
 			}
 
 			return;
 		}
 
-		if (!event.isCancelled() && !canInteractWithBlock(player, "modifyworld.blocks.interact.", event.getClickedBlock())) {
-			informPlayerAboutDenial(player);
+		if (!event.isCancelled() && permissionDenied(player, "modifyworld.blocks.interact", event.getClickedBlock())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onItemEnchant(EnchantItemEvent event) {
-		if (!canInteractWithItem(event.getEnchanter(), "modifyworld.items.enchant.", event.getItem())){
+		if (permissionDenied(event.getEnchanter(), "modifyworld.items.enchant", event.getItem())) {
 			event.setCancelled(true);
-			informPlayerAboutDenial(event.getEnchanter());
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOW)
 	public void onItemCraft(CraftItemEvent event) {
-		Player player = (Player)event.getWhoClicked();
-		
-		if (!canInteractWithItem(player, "modifyworld.items.craft.", event.getRecipe().getResult())){
+		Player player = (Player) event.getWhoClicked();
+
+		if (permissionDenied(player, "modifyworld.items.craft", event.getRecipe().getResult())) {
 			event.setCancelled(true);
-			informPlayerAboutDenial(player);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOW)
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		Player player = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
@@ -278,7 +237,7 @@ public class PlayerListener extends ModifyworldListener {
 			return;
 		}
 
-		if (!player.hasPermission("modifyworld.digestion")) {
+		if (_permissionDenied(player, "modifyworld.digestion")) {
 			event.setCancelled(true);
 		}
 	}
@@ -290,14 +249,12 @@ public class PlayerListener extends ModifyworldListener {
 
 		Inventory inventory = player.getInventory();
 		for (ItemStack stack : inventory.getContents()) {
-			if (stack != null && !canInteractWithItem(player, "modifyworld.items.have.", stack)) {
+			if (stack != null && permissionDenied(player, "modifyworld.items.have", stack)) {
 				inventory.remove(stack);
 
 				if (this.dropRestrictedItem) {
 					player.getWorld().dropItemNaturally(player.getLocation(), stack);
 				}
-
-				informPlayer(player, String.format(this.prohibitedItemMessage, stack.getType().name()));
 			}
 		}
 	}

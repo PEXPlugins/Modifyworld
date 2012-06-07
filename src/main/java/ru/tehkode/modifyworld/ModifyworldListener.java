@@ -18,7 +18,6 @@
  */
 package ru.tehkode.modifyworld;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +25,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
@@ -35,61 +35,48 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  */
 public abstract class ModifyworldListener implements Listener {
 
-	public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
-	protected String permissionDenied = PERMISSION_DENIED;
-	protected PermissionManager permissionsManager;
+	protected PlayerInformer informer;
 	protected ConfigurationSection config;
 	protected boolean informPlayers = false;
 	protected boolean useMaterialNames = true;
 	protected boolean checkMetadata = false;
 	protected boolean checkItemUse = false;
 	protected boolean enableWhitelist = false;
-	
-	public ModifyworldListener(Plugin plugin, ConfigurationSection config) {
-		this.permissionsManager = PermissionsEx.getPermissionManager();
+
+	public ModifyworldListener(Plugin plugin, ConfigurationSection config, PlayerInformer informer) {
+		this.informer = informer;
 		this.config = config;
 
 		this.registerEvents(plugin);
 
 		this.informPlayers = config.getBoolean("informPlayers", informPlayers);
-		this.permissionDenied = config.getString("messages.permissionDenied", this.permissionDenied);
 		this.useMaterialNames = config.getBoolean("use-material-names", useMaterialNames);
 		this.checkMetadata = config.getBoolean("check-metadata", checkMetadata);
 		this.checkItemUse = config.getBoolean("item-use-check", checkItemUse);
 		this.enableWhitelist = config.getBoolean("whitelist", enableWhitelist);
 	}
 
-	protected void informPlayer(Player player, String message) {
-		if (this.informPlayers) {
-			player.sendMessage(ChatColor.RED + message);
-		}
-	}
+	private String getEntityName(Entity entity) {
 
-	protected void informPlayerAboutDenial(Player player) {
-		this.informPlayer(player, this.permissionDenied);
-	}
-
-	protected String getEntityName(Entity entity) {
-		
 		if (entity instanceof ComplexEntityPart) {
-			return getEntityName(((ComplexEntityPart)entity).getParent());
+			return getEntityName(((ComplexEntityPart) entity).getParent());
 		}
-		
+
 		String entityName = entity.getType().toString().toLowerCase().replace("_", "");
-		
+
 		if (entity instanceof Item) {
 			entityName = getItemPermission(((Item) entity).getItemStack());
 		}
-		
+
 		if (entity instanceof Player) {
 			return "player." + ((Player) entity).getName();
 		} else if (entity instanceof Tameable) {
 			Tameable animal = (Tameable) entity;
-			
-			return "animal." + entityName+ (animal.isTamed() ? "." + ((Player) animal.getOwner()).getName() : "");
+
+			return "animal." + entityName + (animal.isTamed() ? "." + ((Player) animal.getOwner()).getName() : "");
 		}
 
-		
+
 		EntityCategory category = EntityCategory.fromEntity(entity);
 
 		if (category == null) {
@@ -100,32 +87,84 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	// Functional programming fuck yeah
-	protected String getMaterialPermission(Material type) {
+	private String getMaterialPermission(Material type) {
 		return this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : Integer.toString(type.getId());
 	}
-	
-	protected String getMaterialPermission(Material type, byte metadata) {
-		return this.getMaterialPermission(type) + (metadata > 0 ? ":" + metadata : "");
-	}
-	
-	protected String getItemPermission(ItemStack item) {
-		return this.getMaterialPermission(item.getType(), item.getData().getData());
-	}
-	
-	protected String getBlockPermission(Block block) {
-		return this.getMaterialPermission(block.getType(), block.getData());
+
+	private String getMaterialPermission(Material type, byte metadata) {
+		return getMaterialPermission(type) + (metadata > 0 ? ":" + metadata : "");
 	}
 
-	protected boolean canInteractWithMaterial(Player player, String basePermission, Material type) {
-		return player.hasPermission(basePermission + this.getMaterialPermission(type));
+	private String getBlockPermission(Block block) {
+		return getMaterialPermission(block.getType(), block.getData());
 	}
 
-	protected boolean canInteractWithItem(Player player, String basePermission, ItemStack item) {
-		return player.hasPermission(basePermission + this.getMaterialPermission(item.getType(), item.getData().getData()));
+	public String getItemPermission(ItemStack item) {
+		return getMaterialPermission(item.getType(), item.getData().getData());
 	}
 
-	protected boolean canInteractWithBlock(Player player, String basePermission, Block block) {
-		return player.hasPermission(basePermission + this.getMaterialPermission(block.getType(), block.getData()));
+	/*
+	protected boolean permissionDenied(Player player, String basePermission, Entity entity) {
+		if (entity instanceof Player && PermissionsEx.isAvailable()) {
+			PermissionUser entityUser = PermissionsEx.getUser((Player)entity);
+
+			for (PermissionGroup group : entityUser.getGroups()) {
+				if (permissionDenied(player, basePermission, "group", group.getName())) {
+					return true;
+				}
+			}
+
+			return permissionDenied(player, basePermission, "player", entityUser.getName());
+		}
+
+		return permissionDenied(player, basePermission, entity);
+	}
+	*/
+
+	protected boolean permissionDenied(Player player, String basePermission, Object... arguments) {
+		String permission = assemblePermission(basePermission, arguments);
+		boolean isDenied = !player.hasPermission(permission);
+
+		if (isDenied) {
+			this.informer.informPlayer(player, permission, arguments);
+		}
+
+		return isDenied;
+	}
+
+	protected boolean _permissionDenied(Player player, String permission, Object... arguments) {
+		return !player.hasPermission(assemblePermission(permission, arguments));
+	}
+
+	protected String assemblePermission(String permission, Object... arguments) {
+		StringBuilder builder = new StringBuilder(permission);
+
+		if (arguments != null) {
+			for (Object obj : arguments) {
+				if (obj == null) {
+					continue;
+				}
+				
+				builder.append('.');
+				builder.append(getObjectPermission(obj));
+			}
+		}
+
+		return builder.toString();
+	}
+
+	protected String getObjectPermission(Object obj) {
+		if (obj instanceof Entity) {
+			return (getEntityName((Entity) obj));
+		} else if (obj instanceof ItemStack) {
+			return (getItemPermission((ItemStack) obj));
+		} else if (obj instanceof Material) {
+			return (getMaterialPermission((Material) obj));
+		} else if (obj instanceof Block) {
+			return (getBlockPermission((Block) obj));
+		}
+
+		return (obj.toString());
 	}
 
 	private void registerEvents(Plugin plugin) {

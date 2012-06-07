@@ -29,6 +29,7 @@ import org.bukkit.event.painting.PaintingBreakEvent;
 import org.bukkit.event.painting.PaintingPlaceEvent;
 import org.bukkit.plugin.Plugin;
 import ru.tehkode.modifyworld.ModifyworldListener;
+import ru.tehkode.modifyworld.PlayerInformer;
 
 /**
  *
@@ -36,22 +37,20 @@ import ru.tehkode.modifyworld.ModifyworldListener;
  */
 public class BlockListener extends ModifyworldListener {
 
-	public BlockListener(Plugin plugin, ConfigurationSection config) {
-		super(plugin, config);
+	public BlockListener(Plugin plugin, ConfigurationSection config, PlayerInformer informer) {
+		super(plugin, config, informer);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!canInteractWithBlock(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
@@ -64,17 +63,14 @@ public class BlockListener extends ModifyworldListener {
 
 		PaintingBreakByEntityEvent pbee = (PaintingBreakByEntityEvent) event;
 		if (pbee.getRemover() instanceof Player
-				&& !canInteractWithMaterial((Player) pbee.getRemover(), "modifyworld.blocks.destroy.", Material.PAINTING)) {
-
-			informPlayerAboutDenial((Player) pbee.getRemover());
+				&& permissionDenied((Player) pbee.getRemover(), "modifyworld.blocks.destroy.", Material.PAINTING)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPaintingPlace(PaintingPlaceEvent event) {
-		if (!canInteractWithMaterial(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
-			informPlayerAboutDenial(event.getPlayer());
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
 			event.setCancelled(true);
 		}
 	}
