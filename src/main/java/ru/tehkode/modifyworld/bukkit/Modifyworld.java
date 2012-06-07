@@ -21,6 +21,7 @@ package ru.tehkode.modifyworld.bukkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,7 @@ public class Modifyworld extends JavaPlugin {
 	@Override
 	public FileConfiguration getConfig() {
 		if (this.config == null) {
-			this.loadConfig();
+			this.reloadConfig();
 		}
 
 		return this.config;
@@ -137,19 +138,30 @@ public class Modifyworld extends JavaPlugin {
 		}
 	}
 
-	protected void loadConfig() {
+	@Override
+	public void reloadConfig() {
 		this.config = new YamlConfiguration();
 		config.options().pathSeparator('/');
-
-		this.getLogger().info("Loading configuration - " + this.configFile.getAbsolutePath());
 
 		try {
 			config.load(configFile);
 		} catch (FileNotFoundException e) {
 			this.getLogger().severe("Configuration file not found - deploying default one");
+			InputStream defConfigStream = getResource("config.yml");
+			if (defConfigStream != null) {
+				try {
+					this.config.load(defConfigStream);
+				} catch (Exception de) {
+					this.getLogger().severe("Default config file is broken. Please tell this to Modifyworld author.");
+				}
+			}
 		} catch (Exception e) {
 			this.getLogger().severe("Failed to load configuration file: " + e.getMessage());
 		}
 
+		InputStream defConfigStream = getResource("config.yml");
+		if (defConfigStream != null) {
+			this.config.setDefaults(YamlConfiguration.loadConfiguration(defConfigStream));
+		}
 	}
 }
