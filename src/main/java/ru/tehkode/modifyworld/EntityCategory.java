@@ -26,6 +26,7 @@ import org.bukkit.entity.*;
 
 public enum EntityCategory {
 	PLAYER("player", Player.class),
+	ITEM("item", Item.class),
 	ANIMAL("animal", Animals.class, Squid.class),
 	MONSTER("monster", Monster.class, Slime.class, EnderDragon.class, Ghast.class ),
 	NPC("npc", NPC.class),

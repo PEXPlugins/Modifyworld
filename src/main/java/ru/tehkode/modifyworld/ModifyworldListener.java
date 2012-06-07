@@ -26,7 +26,6 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -71,7 +70,16 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	protected String getEntityName(Entity entity) {
-		String entityName = entity.toString().substring(5).toLowerCase();
+		
+		if (entity instanceof ComplexEntityPart) {
+			return getEntityName(((ComplexEntityPart)entity).getParent());
+		}
+		
+		String entityName = entity.getType().toString().toLowerCase().replace("_", "");
+		
+		if (entity instanceof Item) {
+			entityName = getItemPermission(((Item) entity).getItemStack());
+		}
 		
 		if (entity instanceof Player) {
 			return "player." + ((Player) entity).getName();
