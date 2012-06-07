@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.tehkode</groupId>
     <artifactId>Modifyworld</artifactId>
-    <version>1.19.2</version>
+    <version>1.19.3</version>
     <name>Modifyworld</name>
     <url>https://github.com/t3hk0d3/Modifyworld</url>
     <issueManagement>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.0</version>
+            <version>1.2.5-R3.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
