@@ -108,6 +108,11 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
 		String materialName = event.getBlockClicked().getType().toString().toLowerCase().replace("stationary_", ""); // STATIONARY_WATER -> water
+		
+		if ("air".equals(materialName)) { // This should be milk
+			materialName = "milk";
+		}
+		
 		if (permissionDenied(event.getPlayer(), "modifyworld.bucket.fill", materialName)) {
 			event.setCancelled(true);
 		}
