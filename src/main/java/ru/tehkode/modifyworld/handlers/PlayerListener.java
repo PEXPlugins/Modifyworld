@@ -192,7 +192,7 @@ public class PlayerListener extends ModifyworldListener {
 							event.getPlayer().updateInventory();
 						}
 					}
-					if (action == Action.RIGHT_CLICK_BLOCK) {
+					if (action == Action.RIGHT_CLICK_AIR) {
 						return;
 					}
 			}
