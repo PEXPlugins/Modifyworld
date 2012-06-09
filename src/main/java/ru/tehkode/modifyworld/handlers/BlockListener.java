@@ -43,14 +43,14 @@ public class BlockListener extends ModifyworldListener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.destroy.", event.getBlock())) {
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.destroy", event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place.", event.getBlock())) {
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place", event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
@@ -63,14 +63,14 @@ public class BlockListener extends ModifyworldListener {
 
 		PaintingBreakByEntityEvent pbee = (PaintingBreakByEntityEvent) event;
 		if (pbee.getRemover() instanceof Player
-				&& permissionDenied((Player) pbee.getRemover(), "modifyworld.blocks.destroy.", Material.PAINTING)) {
+				&& permissionDenied((Player) pbee.getRemover(), "modifyworld.blocks.destroy", Material.PAINTING)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPaintingPlace(PaintingPlaceEvent event) {
-		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place.", Material.PAINTING)) {
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place", Material.PAINTING)) {
 			event.setCancelled(true);
 		}
 	}
