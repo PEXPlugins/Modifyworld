@@ -176,7 +176,7 @@ public class PlayerListener extends ModifyworldListener {
 
 		Player player = event.getPlayer();
 
-		if (action == Action.RIGHT_CLICK_AIR) { //RIGHT_CLICK_AIR is cancelled by default.
+		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { //RIGHT_CLICK_AIR is cancelled by default.
 			switch (player.getItemInHand().getType()) {
 				case POTION: //Only check splash potions.
 					if ((player.getItemInHand().getDurability() & 0x4000) != 0x4000) {
