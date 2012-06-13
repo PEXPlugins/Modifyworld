@@ -6,7 +6,7 @@ drop-restricted-item: false
 item-use-check: false
 messages:
   message-format: '&f[&2Modifyworld&f]&4 %s'
-  default-message: Sorry, you don't have enough permissions - $permission
+  default-message: Sorry, you don't have enough permissions
   modifyworld.items.use: Stop, &a$1&4 won't fit into &a$3
   modifyworld.login: You are not allowed to join this server. Goodbye!
   modifyworld.blocks.interact: You are too jelly for &2$1
