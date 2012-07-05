@@ -1,8 +1,5 @@
 package ru.tehkode.modifyworld;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,6 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerInformer {
 

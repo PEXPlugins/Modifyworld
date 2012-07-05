@@ -18,13 +18,6 @@
  */
 package ru.tehkode.modifyworld.bukkit;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,8 +25,18 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.modifyworld.ModifyworldListener;
 import ru.tehkode.modifyworld.PlayerInformer;
-import ru.tehkode.modifyworld.handlers.*;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
+import ru.tehkode.modifyworld.handlers.BlockListener;
+import ru.tehkode.modifyworld.handlers.EntityListener;
+import ru.tehkode.modifyworld.handlers.PlayerListener;
+import ru.tehkode.modifyworld.handlers.VehicleListener;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -59,13 +62,6 @@ public class Modifyworld extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		// At first check PEX existance
-		if (!PermissionsEx.isAvailable()) {
-			this.getLogger().severe("PermissionsEx not found, disabling");
-			this.getPluginLoader().disablePlugin(this);
-			return;
-		}
-
 		this.config = this.getConfig();
 
 		if (!config.isConfigurationSection("messages")) {

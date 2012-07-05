@@ -1,6 +1,6 @@
 name: Modifyworld
 main: ru.tehkode.modifyworld.bukkit.Modifyworld
-depend: [ PermissionsEx ]
+soft-depend: [ PermissionsEx ]
 version: 1.19.3
 author: t3hk0d3
 website: www.bukkit.org
