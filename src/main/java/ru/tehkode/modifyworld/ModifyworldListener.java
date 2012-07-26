@@ -70,7 +70,7 @@ public abstract class ModifyworldListener implements Listener {
 		} else if (entity instanceof Tameable) {
 			Tameable animal = (Tameable) entity;
 
-			return "animal." + entityName + (animal.isTamed() ? "." + ((Player) animal.getOwner()).getName() : "");
+			return "animal." + entityName + (animal.isTamed() ? "." + animal.getOwner().getName() : "");
 		}
 
 
@@ -141,7 +141,7 @@ public abstract class ModifyworldListener implements Listener {
 				if (obj == null) {
 					continue;
 				}
-				
+
 				builder.append('.');
 				builder.append(getObjectPermission(obj));
 			}
