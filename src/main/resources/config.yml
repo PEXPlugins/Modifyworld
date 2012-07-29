@@ -17,6 +17,7 @@ messages:
   modifyworld.chat.private: Listener is deaf :(
   modifyworld.items.have: Prohibited item &a$1&4 has been removed from your inventory.
   modifyworld.items.drop: This is indecent to scatter &a$1&4 around
+  modifyworld.items.hold: Beware, &a$1&4 is cursed!
   modifyworld.items.craft: Sorry, but &a$1&4 is too complicated
   modifyworld.items.enchant: Sorry, &a$1&4 is too dangerous
   modifyworld.vehicle.enter.boat: You are too heavy for this &a$1
