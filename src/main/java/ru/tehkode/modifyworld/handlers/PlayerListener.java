@@ -129,7 +129,7 @@ public class PlayerListener extends ModifyworldListener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerChat(PlayerChatEvent event) {
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (permissionDenied(event.getPlayer(), "modifyworld.chat")) {
             event.setCancelled(true);
         }
