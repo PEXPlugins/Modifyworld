@@ -176,6 +176,23 @@ public class PlayerListener extends ModifyworldListener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerInventoryEvent(InventoryClickEvent event) {
+        ItemStack item = event.getCursor();
+
+        if(item == null || item.getType() == Material.AIR || event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
+            return;
+        }
+
+        Player player = (Player)event.getWhoClicked();
+
+        int targetSlot = player.getInventory().getHeldItemSlot();
+
+        if(event.getSlot() == targetSlot &&  permissionDenied(player, "modifyworld.items.hold", item)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (this.checkItemUse) {
             if (permissionDenied(event.getPlayer(), "modifyworld.items.use", event.getPlayer().getItemInHand(), "on.entity", event.getRightClicked())) {
