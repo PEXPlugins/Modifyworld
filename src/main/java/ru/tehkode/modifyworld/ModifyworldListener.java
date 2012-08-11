@@ -20,6 +20,7 @@ package ru.tehkode.modifyworld;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
@@ -153,6 +154,8 @@ public abstract class ModifyworldListener implements Listener {
 	protected String getObjectPermission(Object obj) {
 		if (obj instanceof Entity) {
 			return (getEntityName((Entity) obj));
+		} else if (obj instanceof BlockState) {
+			return (getBlockPermission(((BlockState)obj).getBlock()));
 		} else if (obj instanceof ItemStack) {
 			return (getItemPermission((ItemStack) obj));
 		} else if (obj instanceof Material) {
