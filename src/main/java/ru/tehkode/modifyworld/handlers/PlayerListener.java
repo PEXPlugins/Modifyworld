@@ -180,11 +180,9 @@ public class PlayerListener extends ModifyworldListener {
 	public void onPlayerInventoryClick(InventoryClickEvent event) {
 		InventoryHolder holder = event.getInventory().getHolder();
 
-		if (holder instanceof Player) { // do not track inter-inventory stuff
-			return;
-		}
-
-		if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) { // top inventory only
+		if (holder instanceof Player || // do not track inter-inventory stuff
+				event.getRawSlot() >= event.getView().getTopInventory().getSize() || // top inventory only
+				event.getSlotType() != InventoryType.SlotType.OUTSIDE) { // do not track drop
 			return;
 		}
 
@@ -193,18 +191,18 @@ public class PlayerListener extends ModifyworldListener {
 		String action;
 		String op;
 		ItemStack item;
-		
-		if(take == null) {
+
+		if (take == null) {
 			action = "put";
 			item = event.getCursor();
 		} else {
 			action = "take";
 			item = take;
 		}
-		
+
 		Player player = (Player) event.getWhoClicked();
-		
-		if(permissionDenied(player, "modifyworld.items", action, item, "of", holder)) {
+
+		if (permissionDenied(player, "modifyworld.items", action, item, "of", holder)) {
 			event.setCancelled(true);
 		}
 	}
