@@ -52,7 +52,7 @@ public class EntityListener extends ModifyworldListener {
 
 			if (edbe.getEntity() instanceof Player) {
 				player = (Player) edbe.getEntity();
-				if (edbe.getDamager() != null) { // Prevent from taking damage by entity
+				if (edbe.getDamager() != null && player.isOnline()) { // Prevent from taking damage by entity
 					if (_permissionDenied(player, "modifyworld.damage.take", edbe.getDamager())) {
 						cancelDamageEvent(player, event);
 					}
