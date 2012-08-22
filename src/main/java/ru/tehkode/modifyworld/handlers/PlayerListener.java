@@ -182,7 +182,7 @@ public class PlayerListener extends ModifyworldListener {
 
 		if (holder instanceof Player || // do not track inter-inventory stuff
 				event.getRawSlot() >= event.getView().getTopInventory().getSize() || // top inventory only
-				event.getSlotType() != InventoryType.SlotType.OUTSIDE) { // do not track drop
+				event.getSlotType() == InventoryType.SlotType.OUTSIDE) { // do not track drop
 			return;
 		}
 
