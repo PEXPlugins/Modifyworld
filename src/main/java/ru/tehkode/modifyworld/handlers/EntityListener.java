@@ -71,7 +71,6 @@ public class EntityListener extends ModifyworldListener {
 
 	protected void cancelDamageEvent(Player player, EntityDamageEvent event) {
 		event.setCancelled(true);
-		event.setDamage(0);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
