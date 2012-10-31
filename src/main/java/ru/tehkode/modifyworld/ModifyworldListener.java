@@ -159,6 +159,8 @@ public abstract class ModifyworldListener implements Listener {
 	protected String getObjectPermission(Object obj) {
 		if (obj instanceof Entity) {
 			return (getEntityName((Entity) obj));
+		} else if (obj instanceof EntityType) {
+			return formatEnumString(((EntityType)obj).name());
 		} else if (obj instanceof BlockState) {
 			return (getBlockPermission(((BlockState)obj).getBlock()));
 		} else if (obj instanceof ItemStack) {

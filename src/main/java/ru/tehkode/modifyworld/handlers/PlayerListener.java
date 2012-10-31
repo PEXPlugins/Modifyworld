@@ -37,6 +37,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.material.SpawnEgg;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import ru.tehkode.modifyworld.ModifyworldListener;
@@ -265,9 +266,13 @@ public class PlayerListener extends ModifyworldListener {
 							event.getPlayer().updateInventory();
 						}
 					}
-					if (action == Action.RIGHT_CLICK_AIR) {
-						return;
+					return; // no need to check further
+				case MONSTER_EGG:
+				case MONSTER_EGGS:
+					if (permissionDenied(player, "modifyworld.spawn", ((SpawnEgg)player.getItemInHand().getData()).getSpawnedType())) {
+						event.setUseItemInHand(Result.DENY);
 					}
+					return; // no need to check further
 			}
 		}
 
