@@ -24,6 +24,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -60,7 +61,7 @@ public abstract class ModifyworldListener implements Listener {
 			return getEntityName(((ComplexEntityPart) entity).getParent());
 		}
 
-		String entityName = entity.getType().toString().toLowerCase().replace("_", "");
+		String entityName = formatEnumString(entity.getType().toString());
 
 		if (entity instanceof Item) {
 			entityName = getItemPermission(((Item) entity).getItemStack());
@@ -83,10 +84,14 @@ public abstract class ModifyworldListener implements Listener {
 
 		return category.getNameDot() + entityName;
 	}
+	
+	private String getInventoryTypePermission(InventoryType type) {
+		return formatEnumString(type.name());
+	}
 
 	// Functional programming fuck yeah
 	private String getMaterialPermission(Material type) {
-		return this.useMaterialNames ? type.name().toLowerCase().replace("_", "") : Integer.toString(type.getId());
+		return this.useMaterialNames ? formatEnumString(type.name()) : Integer.toString(type.getId());
 	}
 
 	private String getMaterialPermission(Material type, byte metadata) {
@@ -162,6 +167,8 @@ public abstract class ModifyworldListener implements Listener {
 			return (getMaterialPermission((Material) obj));
 		} else if (obj instanceof Block) {
 			return (getBlockPermission((Block) obj));
+		} else if (obj instanceof InventoryType) {
+			return getInventoryTypePermission((InventoryType)obj);
 		}
 
 		return (obj.toString());
@@ -169,5 +176,9 @@ public abstract class ModifyworldListener implements Listener {
 
 	private void registerEvents(Plugin plugin) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+	
+	private String formatEnumString(String enumName) {
+		return enumName.toLowerCase().replace("_", "");
 	}
 }

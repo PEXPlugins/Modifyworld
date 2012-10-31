@@ -182,14 +182,14 @@ public class PlayerListener extends ModifyworldListener {
 
 		if (holder instanceof Player || // do not track inter-inventory stuff
 				event.getRawSlot() >= event.getView().getTopInventory().getSize() || // top inventory only
-				event.getSlotType() == InventoryType.SlotType.OUTSIDE) { // do not track drop
+				event.getSlotType() == InventoryType.SlotType.OUTSIDE ||  // do not track drop
+				event.getSlot() == -999) { // temporary fix for bukkit bug (BUKKIT-2768)
 			return;
 		}
 
-		ItemStack take = holder.getInventory().getItem(event.getSlot());
+		ItemStack take = event.getInventory().getItem(event.getSlot());
 
 		String action;
-		String op;
 		ItemStack item;
 
 		if (take == null) {
@@ -202,7 +202,7 @@ public class PlayerListener extends ModifyworldListener {
 
 		Player player = (Player) event.getWhoClicked();
 
-		if (permissionDenied(player, "modifyworld.items", action, item, "of", holder)) {
+		if (permissionDenied(player, "modifyworld.items", action, item, "of", event.getInventory().getType())) {
 			event.setCancelled(true);
 		}
 	}
