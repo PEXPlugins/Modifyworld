@@ -267,8 +267,7 @@ public class PlayerListener extends ModifyworldListener {
 						}
 					}
 					return; // no need to check further
-				case MONSTER_EGG:
-				case MONSTER_EGGS:
+				case MONSTER_EGG: // don't add MONSTER_EGGS here
 					if (permissionDenied(player, "modifyworld.spawn", ((SpawnEgg)player.getItemInHand().getData()).getSpawnedType())) {
 						event.setUseItemInHand(Result.DENY);
 					}
