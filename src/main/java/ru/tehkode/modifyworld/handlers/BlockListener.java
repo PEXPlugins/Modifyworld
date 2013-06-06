@@ -23,10 +23,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.*;
-import org.bukkit.event.painting.PaintingBreakByEntityEvent;
-import org.bukkit.event.painting.PaintingBreakEvent;
-import org.bukkit.event.painting.PaintingPlaceEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.plugin.Plugin;
 import ru.tehkode.modifyworld.ModifyworldListener;
 import ru.tehkode.modifyworld.PlayerInformer;
@@ -56,21 +57,16 @@ public class BlockListener extends ModifyworldListener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPaintingBreak(PaintingBreakEvent event) {
-		if (!(event instanceof PaintingBreakByEntityEvent)) {
-			return;
-		}
-
-		PaintingBreakByEntityEvent pbee = (PaintingBreakByEntityEvent) event;
-		if (pbee.getRemover() instanceof Player
-				&& permissionDenied((Player) pbee.getRemover(), "modifyworld.blocks.destroy", Material.PAINTING)) {
+	public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+		if (event.getRemover() instanceof Player
+				&& permissionDenied((Player) event.getRemover(), "modifyworld.blocks.destroy", event.getEntity().getType())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPaintingPlace(PaintingPlaceEvent event) {
-		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place", Material.PAINTING)) {
+	public void onPaintingPlace(HangingPlaceEvent event) {
+		if (permissionDenied(event.getPlayer(), "modifyworld.blocks.place", event.getEntity().getType())) {
 			event.setCancelled(true);
 		}
 	}
