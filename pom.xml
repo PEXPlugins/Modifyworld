@@ -3,15 +3,30 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.tehkode</groupId>
     <artifactId>Modifyworld</artifactId>
-    <version>1.19.4</version>
+    <version>1.19.6</version>
     <name>Modifyworld</name>
     <url>https://github.com/t3hk0d3/Modifyworld</url>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/t3hk0d3/Modifyworld/issues</url>
     </issueManagement>
+    <scm>
+        <connection>scm:git:git://github.com/PEXPlugins/Modifyworld.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/PEXPlugins/Modifyworld.git</developerConnection>
+        <url>https://github.com/PEXPlugins/PermissionsEx.git</url>
+    </scm>
     <build>
         <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <targetPath>/</targetPath>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,6 +54,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <preparationGoals>assembly:assembly</preparationGoals>
+                    <goals>assembly:assembly</goals>
+                    <tagNameFormat>STABLE-@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -51,7 +74,7 @@
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.19.3</version>
+            <version>1.19.5</version>
         </dependency>
     </dependencies>
 	<repositories>
