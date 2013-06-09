@@ -19,8 +19,8 @@
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <directory>${project.basedir}</directory>
-                <targetPath>/</targetPath>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <!--<targetPath>/</targetPath>-->
                 <includes>
                     <include>**</include>
                 </includes>
