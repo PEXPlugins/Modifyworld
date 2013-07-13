@@ -79,31 +79,38 @@ public class PlayerInformer {
 	}
 
 	public String getMessage(Player player, String permission) {
-		if (PermissionsEx.isAvailable()) {
-			PermissionUser user = PermissionsEx.getUser(player);
+		boolean permissionsExExists = true;
+		try {
+			Class permissionsExClass = Class.forName("ru.tehkode.permissions.bukkit.PermissionsEx");
+		} catch (ClassNotFoundException e) {
+			permissionsExExists = false;
+		}
+		if (permissionsExExists) {
+			if (PermissionsEx.isAvailable()) {
+				PermissionUser user = PermissionsEx.getUser(player);
 
-			String message;
-			String perm = permission;
-			int index;
+				String message;
+				String perm = permission;
+				int index;
 
-			while ((index = perm.lastIndexOf(".")) != -1) {
-				perm = perm.substring(0, index);
+				while ((index = perm.lastIndexOf(".")) != -1) {
+					perm = perm.substring(0, index);
 
-				message = user.getOption("permission-denied-" + perm, player.getWorld().getName(), null);
-				if (message == null) {
-					continue;
+					message = user.getOption("permission-denied-" + perm, player.getWorld().getName(), null);
+					if (message == null) {
+						continue;
+					}
+
+					return message;
 				}
 
-				return message;
-			}
+				message = user.getOption("permission-denied", player.getWorld().getName(), null);
 
-			message = user.getOption("permission-denied", player.getWorld().getName(), null);
-
-			if (message != null) {
-				return message;
+				if (message != null) {
+					return message;
+				}
 			}
 		}
-
 		return getMessage(permission);
 	}
 
