@@ -79,12 +79,7 @@ public class PlayerInformer {
 	}
 
 	public String getMessage(Player player, String permission) {
-		boolean permissionsExAvailable = false;
-		try{
-			permissionsExAvailable = PermissionsEx.isAvailable();
-		} catch(ClassNotFoundException ex) {
-		}
-		if (permissionsExAvailable) {
+		if (PermissionsEx.isAvailable()) {
 			PermissionUser user = PermissionsEx.getUser(player);
 
 			String message;
