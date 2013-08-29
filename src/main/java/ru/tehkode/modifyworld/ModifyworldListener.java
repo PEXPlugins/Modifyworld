@@ -72,7 +72,7 @@ public abstract class ModifyworldListener implements Listener {
 		} else if (entity instanceof Tameable) {
 			Tameable animal = (Tameable) entity;
 
-			return "animal." + entityName + (animal.isTamed() ? "." + animal.getOwner().getName() : "");
+			return "animal." + entityName + (animal.isTamed() && animal.getOwner() != null ? "." + animal.getOwner().getName() : "");
 		}
 
 
@@ -84,7 +84,7 @@ public abstract class ModifyworldListener implements Listener {
 
 		return category.getNameDot() + entityName;
 	}
-	
+
 	private String getInventoryTypePermission(InventoryType type) {
 		return formatEnumString(type.name());
 	}
@@ -179,7 +179,7 @@ public abstract class ModifyworldListener implements Listener {
 	private void registerEvents(Plugin plugin) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
-	
+
 	private String formatEnumString(String enumName) {
 		return enumName.toLowerCase().replace("_", "");
 	}
