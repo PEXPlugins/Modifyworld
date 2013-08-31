@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.tehkode</groupId>
     <artifactId>Modifyworld</artifactId>
-    <version>1.19.6</version>
+    <version>1.19.7-SNAPSHOT</version>
     <name>Modifyworld</name>
     <url>https://github.com/t3hk0d3/Modifyworld</url>
     <issueManagement>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.4.7-R1.0</version>
+            <version>1.6.2-R0.1</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -75,11 +75,20 @@
             <artifactId>PermissionsEx</artifactId>
             <version>1.19.6</version>
         </dependency>
+        <dependency>
+          <groupId>net.milkbowl</groupId>
+          <artifactId>vault</artifactId>
+          <version>1.2.27</version>
+        </dependency>
     </dependencies>
-	<repositories>
+	  <repositories>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+        <repository>
+	        <id>vault-repo</id>
+ 	        <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
         </repository>
     </repositories>
     <properties>

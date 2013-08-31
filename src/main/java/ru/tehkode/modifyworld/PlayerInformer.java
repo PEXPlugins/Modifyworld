@@ -1,5 +1,7 @@
 package ru.tehkode.modifyworld;
 
+import net.milkbowl.vault.chat.Chat;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,9 +39,7 @@ public class PlayerInformer {
 	private void loadConfig(ConfigurationSection config) {
 
 		this.defaultMessage = config.getString("default-message", this.defaultMessage);
-
 		this.messageFormat = config.getString("message-format", this.messageFormat);
-
 		this.individualMessages = config.getBoolean("individual-messages", this.individualMessages);
 
 		this.importMessages(config);
@@ -79,39 +79,77 @@ public class PlayerInformer {
 	}
 
 	public String getMessage(Player player, String permission) {
-		boolean permissionsExExists = true;
-		try {
-			Class permissionsExClass = Class.forName("ru.tehkode.permissions.bukkit.PermissionsEx");
-		} catch (ClassNotFoundException e) {
-			permissionsExExists = false;
+		String message = null;
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("Vault")) {
+			message = getMessageVault(player, permission);
 		}
-		if (permissionsExExists) {
-			if (PermissionsEx.isAvailable()) {
-				PermissionUser user = PermissionsEx.getUser(player);
-
-				String message;
-				String perm = permission;
-				int index;
-
-				while ((index = perm.lastIndexOf(".")) != -1) {
-					perm = perm.substring(0, index);
-
-					message = user.getOption("permission-denied-" + perm, player.getWorld().getName(), null);
-					if (message == null) {
-						continue;
-					}
-
-					return message;
-				}
-
-				message = user.getOption("permission-denied", player.getWorld().getName(), null);
-
-				if (message != null) {
-					return message;
-				}
+		if (message == null) {
+			try {
+				Class.forName("ru.tehkode.permissions.bukkit.PermissionsEx");
+				message = getMessagePEX(player, permission);
+			} catch (ClassNotFoundException ignore) {
 			}
 		}
+
+		if (message != null) {
+			return message;
+		}
+
 		return getMessage(permission);
+	}
+
+	public String getMessagePEX(Player player, String permission) {
+		if (PermissionsEx.isAvailable()) {
+			PermissionUser user = PermissionsEx.getUser(player);
+
+			String message;
+			String perm = permission;
+			int index;
+
+			while ((index = perm.lastIndexOf(".")) != -1) {
+				perm = perm.substring(0, index);
+
+				message = user.getOption("permission-denied-" + perm, player.getWorld().getName(), null);
+				if (message == null) {
+					continue;
+				}
+
+				return message;
+			}
+
+			message = user.getOption("permission-denied", player.getWorld().getName(), null);
+
+			if (message != null) {
+				return message;
+			}
+		}
+		return null;
+	}
+
+	private String getMessageVault(Player player, String permission) {
+		Chat chat = Bukkit.getServer().getServicesManager().load(Chat.class);
+		if (chat != null) {
+			String message;
+			String perm = permission;
+			int index;
+
+			while ((index = perm.lastIndexOf(".")) != -1) {
+				perm = perm.substring(0, index);
+
+				message = chat.getPlayerInfoString(player.getWorld(), player.getName(), "permission-denied-" + perm, null);
+				if (message == null) {
+					continue;
+				}
+
+				return message;
+			}
+
+			message = chat.getPlayerInfoString(player.getWorld(), player.getName(), "permission-denied", null);
+			if (message != null) {
+				return message;
+			}
+		}
+		return null;
 	}
 
 	public void informPlayer(Player player, String permission, Object... args) {
