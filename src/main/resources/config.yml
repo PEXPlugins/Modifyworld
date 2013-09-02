@@ -1,9 +1,3 @@
-item-restrictions: false
-inform-players: true
-whitelist: false
-use-material-names: true
-drop-restricted-item: false
-item-use-check: false
 messages:
   message-format: '&f[&2Modifyworld&f]&4 %s'
   default-message: Sorry, you don't have enough permissions

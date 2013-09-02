@@ -19,6 +19,7 @@
 package ru.tehkode.modifyworld.bukkit;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -37,6 +38,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -93,14 +95,6 @@ public class Modifyworld extends JavaPlugin {
 		config.set("use-material-names", true);
 		config.set("drop-restricted-item", false);
 		config.set("item-use-check", false);
-
-		// Messages
-		config.set("messages/message-format", PlayerInformer.DEFAULT_MESSAGE_FORMAT);
-		config.set("messages/default-message", PlayerInformer.PERMISSION_DENIED);
-
-		// Predefined messages
-		config.set("messages/modifyworld.login", PlayerInformer.WHITELIST_MESSAGE);
-		config.set("messages/modifyworld.items.have", PlayerInformer.PROHIBITED_ITEM);
 	}
 
 	protected void registerListeners() {
@@ -115,6 +109,73 @@ public class Modifyworld extends JavaPlugin {
 			}
 		}
 	}
+
+    public InputStream getLocalizedResource(String path) {
+        return getLocalizedResource(path, Locale.getDefault());
+    }
+
+    public InputStream getLocalizedResource(String path, Locale locale) {
+        InputStream ret;
+        ret = getResource("lang/" + locale.toString() + "/" + path); // Country-specific
+        if (ret == null && !locale.getCountry().isEmpty()) { // Available without country-specific variant
+            ret = getResource("lang/" + locale.getLanguage() + "/" + path);
+        }
+        if (ret == null) { // Unlocalized
+            ret = getResource(path);
+        }
+        return ret;
+    }
+
+    private YamlConfiguration loadBaseLanguage(String path, Locale locale) throws IOException, InvalidConfigurationException {
+        InputStream load = getResource("lang/" + locale.getLanguage() + "/" + path);
+        if (load != null) {
+            YamlConfiguration conf = new YamlConfiguration();
+            conf.options().copyDefaults(true);
+            conf.load(load);
+            YamlConfiguration def = loadUnlocalized(path);
+            if (def != null) {
+                conf.setDefaults(def);
+            }
+            return conf;
+        }
+        return null;
+    }
+
+    private YamlConfiguration loadUnlocalized(String path) throws IOException, InvalidConfigurationException {
+        InputStream load = getResource(path);
+        if (load != null) {
+            YamlConfiguration conf = new YamlConfiguration();
+            conf.load(load);
+            return conf;
+        }
+        return null;
+    }
+
+    public YamlConfiguration getLocalizedConfig(String path) throws InvalidConfigurationException, IOException {
+        return getLocalizedConfig(path, Locale.getDefault());
+    }
+
+    public YamlConfiguration getLocalizedConfig(String path, Locale locale) throws InvalidConfigurationException, IOException {
+        YamlConfiguration base = new YamlConfiguration();
+        InputStream load =  getResource("lang/" + locale.toString() + "/" + path); // Country-specific
+        if (load != null) {
+            base.load(load);
+            base.options().copyDefaults(true);
+            YamlConfiguration def = loadBaseLanguage(path, locale);
+            if (def == null) {
+                def = loadUnlocalized(path);
+            }
+            if (def != null) {
+                base.setDefaults(def);
+            }
+        } else {
+            base = loadBaseLanguage(path, locale);
+            if (base == null) {
+                base = loadUnlocalized(path);
+            }
+        }
+        return base;
+    }
 
 	@Override
 	public FileConfiguration getConfig() {
@@ -143,7 +204,7 @@ public class Modifyworld extends JavaPlugin {
 			config.load(configFile);
 		} catch (FileNotFoundException e) {
 			this.getLogger().severe("Configuration file not found - deploying default one");
-			InputStream defConfigStream = getResource("config.yml");
+			InputStream defConfigStream = getLocalizedResource("config.yml");
 			if (defConfigStream != null) {
 				try {
 					this.config.load(defConfigStream);
@@ -155,7 +216,7 @@ public class Modifyworld extends JavaPlugin {
 			this.getLogger().severe("Failed to load configuration file: " + e.getMessage());
 		}
 
-		InputStream defConfigStream = getResource("config.yml");
+		InputStream defConfigStream = getLocalizedResource("config.yml");
 		if (defConfigStream != null) {
 			this.config.setDefaults(YamlConfiguration.loadConfiguration(defConfigStream));
 		}

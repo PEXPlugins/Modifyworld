@@ -19,8 +19,6 @@ import java.util.Map;
 public class PlayerInformer {
 
 	public final static String PERMISSION_DENIED = "Sorry, you don't have enough permissions";
-	public final static String WHITELIST_MESSAGE = "You are not allowed to join this server. Goodbye!";
-	public final static String PROHIBITED_ITEM = "Prohibited item \"%s\" has been removed from your inventory.";
 	public final static String DEFAULT_MESSAGE_FORMAT = "&f[&2Modifyworld&f]&4 %s";
 	// Default message format
 	protected String messageFormat = DEFAULT_MESSAGE_FORMAT;
