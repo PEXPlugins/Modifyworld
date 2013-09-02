@@ -1,5 +1,5 @@
 item-restrictions: false
-inform-players: false
+inform-players: true
 whitelist: false
 use-material-names: true
 drop-restricted-item: false

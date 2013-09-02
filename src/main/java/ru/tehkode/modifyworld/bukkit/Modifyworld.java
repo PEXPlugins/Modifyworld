@@ -88,7 +88,7 @@ public class Modifyworld extends JavaPlugin {
 	protected void initializeConfiguration(FileConfiguration config) {
 		// Flags
 		config.set("item-restrictions", false);
-		config.set("inform-players", false);
+		config.set("inform-players", true);
 		config.set("whitelist", false);
 		config.set("use-material-names", true);
 		config.set("drop-restricted-item", false);
