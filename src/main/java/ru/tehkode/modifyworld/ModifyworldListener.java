@@ -95,7 +95,7 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	private String getMaterialPermission(Material type, byte metadata) {
-		return getMaterialPermission(type) + (metadata > 0 ? ":" + metadata : "");
+		return getMaterialPermission(type) + (checkMetadata && metadata > 0 ? ":" + metadata : "");
 	}
 
 	private String getBlockPermission(Block block) {
