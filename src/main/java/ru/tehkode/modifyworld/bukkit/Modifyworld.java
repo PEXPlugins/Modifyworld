@@ -95,6 +95,7 @@ public class Modifyworld extends JavaPlugin {
 		config.set("use-material-names", true);
 		config.set("drop-restricted-item", false);
 		config.set("item-use-check", false);
+		config.set("check-metadata", true);
 	}
 
 	protected void registerListeners() {
