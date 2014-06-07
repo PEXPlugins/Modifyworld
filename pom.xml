@@ -90,6 +90,10 @@
 	        <id>vault-repo</id>
  	        <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
         </repository>
+        <repository>
+          <id>pex-repo</id>
+          <url>http://pex-repo.zachsthings.com</url>
+        </repository>
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
