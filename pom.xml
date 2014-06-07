@@ -73,7 +73,7 @@
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.19.6</version>
+            <version>1.22</version>
         </dependency>
         <dependency>
           <groupId>net.milkbowl</groupId>
