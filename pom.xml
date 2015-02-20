@@ -4,10 +4,10 @@
     <artifactId>Modifyworld</artifactId>
     <version>1.20-SNAPSHOT</version>
     <name>Modifyworld</name>
-    <url>https://github.com/t3hk0d3/Modifyworld</url>
+    <url>https://github.com/PEXPlugins/Modifyworld</url>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/t3hk0d3/Modifyworld/issues</url>
+        <url>https://github.com/PEXPlugins/Modifyworld/issues</url>
     </issueManagement>
     <scm>
         <connection>scm:git:git://github.com/PEXPlugins/Modifyworld.git</connection>
