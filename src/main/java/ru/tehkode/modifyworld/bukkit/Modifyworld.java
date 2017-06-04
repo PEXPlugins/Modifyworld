@@ -18,6 +18,7 @@
  */
 package ru.tehkode.modifyworld.bukkit;
 
+import java.io.InputStreamReader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -132,7 +133,7 @@ public class Modifyworld extends JavaPlugin {
         if (load != null) {
             YamlConfiguration conf = new YamlConfiguration();
             conf.options().copyDefaults(true);
-            conf.load(load);
+            conf.load(new InputStreamReader(load));
             YamlConfiguration def = loadUnlocalized(path);
             if (def != null) {
                 conf.setDefaults(def);
@@ -146,7 +147,7 @@ public class Modifyworld extends JavaPlugin {
         InputStream load = getResource(path);
         if (load != null) {
             YamlConfiguration conf = new YamlConfiguration();
-            conf.load(load);
+            conf.load(new InputStreamReader(load));
             return conf;
         }
         return null;
@@ -160,7 +161,7 @@ public class Modifyworld extends JavaPlugin {
         YamlConfiguration base = new YamlConfiguration();
         InputStream load =  getResource("lang/" + locale.toString() + "/" + path); // Country-specific
         if (load != null) {
-            base.load(load);
+            base.load(new InputStreamReader(load));
             base.options().copyDefaults(true);
             YamlConfiguration def = loadBaseLanguage(path, locale);
             if (def == null) {
@@ -208,7 +209,7 @@ public class Modifyworld extends JavaPlugin {
 			InputStream defConfigStream = getLocalizedResource("config.yml");
 			if (defConfigStream != null) {
 				try {
-					this.config.load(defConfigStream);
+					this.config.load(new InputStreamReader(defConfigStream));
 				} catch (Exception de) {
 					this.getLogger().severe("Default config file is broken. Please tell this to Modifyworld author.");
 				}
@@ -219,7 +220,7 @@ public class Modifyworld extends JavaPlugin {
 
 		InputStream defConfigStream = getLocalizedResource("config.yml");
 		if (defConfigStream != null) {
-			this.config.setDefaults(YamlConfiguration.loadConfiguration(defConfigStream));
+			this.config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream)));
 		}
 	}
 }
