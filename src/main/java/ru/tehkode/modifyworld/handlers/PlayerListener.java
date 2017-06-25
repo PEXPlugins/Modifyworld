@@ -266,12 +266,12 @@ public class PlayerListener extends ModifyworldListener {
 							event.getPlayer().updateInventory();
 						}
 					}
-					return; // no need to check further
+					break; // NEED to check further
 				case MONSTER_EGG: // don't add MONSTER_EGGS here
 					if (permissionDenied(player, "modifyworld.spawn", ((SpawnEgg)player.getItemInHand().getData()).getSpawnedType())) {
 						event.setUseItemInHand(Result.DENY);
 					}
-					return; // no need to check further
+					break; // NEED to check further
 			}
 		}
 
