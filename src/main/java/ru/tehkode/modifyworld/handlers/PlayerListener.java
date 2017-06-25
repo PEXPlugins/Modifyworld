@@ -18,6 +18,8 @@
  */
 package ru.tehkode.modifyworld.handlers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.Material;
@@ -181,30 +183,64 @@ public class PlayerListener extends ModifyworldListener {
 	public void onPlayerInventoryClick(InventoryClickEvent event) {
 		InventoryHolder holder = event.getInventory().getHolder();
 
+		Boolean isClickOnTopInventory = event.getRawSlot() < event.getView().getTopInventory().getSize();
+		Boolean isClickOnBottomInventory = !isClickOnTopInventory;
+
 		if (holder instanceof Player || // do not track inter-inventory stuff
-				event.getRawSlot() >= event.getView().getTopInventory().getSize() || // top inventory only
+				(isClickOnBottomInventory && !event.isShiftClick()) || // If non shift-click on player's inventory, don't care
 				event.getSlotType() == InventoryType.SlotType.OUTSIDE ||  // do not track drop
 				event.getSlot() == -999) { // temporary fix for bukkit bug (BUKKIT-2768)
 			return;
 		}
 
-		ItemStack take = event.getCurrentItem();
+		ItemStack itemOnCursor     = event.getCursor();
+		ItemStack itemBeingClicked = event.getCurrentItem();
 
-		String action;
-		ItemStack item;
+		ArrayList<HashMap<String, Object>> actionItemToCheckMappings = new ArrayList<HashMap<String, Object>>();
 
-		if (take == null) {
-			action = "put";
-			item = event.getCursor();
-		} else {
-			action = "take";
-			item = take;
+		if (isClickOnBottomInventory &&  event.isShiftClick()) {
+			// When shift click on bottom inventory, even when cursor contains an item stack
+			// It would ONLY move the clicked item stack to top
+			HashMap<String, Object> hash = new HashMap<String, Object>(2);
+			hash.put("action", "put");
+			hash.put("item", itemBeingClicked);
+
+			actionItemToCheckMappings.add(hash);
+		} else if (isClickOnTopInventory && event.isShiftClick()) {
+			// When shift click on top inventory, even when cursor contains an item stack
+			// It would ONLY move the clicked item stack to bottom
+			HashMap<String, Object> hash = new HashMap<String, Object>(2);
+			hash.put("action", "take");
+			hash.put("item", itemBeingClicked);
+
+			actionItemToCheckMappings.add(hash);
+		}
+		else { // isClickOnTopInventory && !event.isShiftClick()
+			if (event.getCursor().getType() != Material.AIR) {
+				HashMap<String, Object> hash = new HashMap<String, Object>(2);
+				hash.put("action", "put");
+				hash.put("item", itemOnCursor);
+
+				actionItemToCheckMappings.add(hash);
+			}
+			if (event.getCurrentItem().getType() != Material.AIR) {
+				HashMap<String, Object> hash = new HashMap<String, Object>(2);
+				hash.put("action", "take");
+				hash.put("item", itemBeingClicked);
+
+				actionItemToCheckMappings.add(hash);
+			}
 		}
 
 		Player player = (Player) event.getWhoClicked();
 
-		if (permissionDenied(player, "modifyworld.items", action, item, "of", event.getInventory().getType())) {
-			event.setCancelled(true);
+		for(HashMap<String, Object> actionItemToCheckMapping : actionItemToCheckMappings){
+			String actionToCheck       = (String) actionItemToCheckMapping.get("action");
+			ItemStack itemStackToCheck = (ItemStack) actionItemToCheckMapping.get("item");
+
+			if (permissionDenied(player, "modifyworld.items", actionToCheck, itemStackToCheck, "of", event.getInventory().getType())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 
