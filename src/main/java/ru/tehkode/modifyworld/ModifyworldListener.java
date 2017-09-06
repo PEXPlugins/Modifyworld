@@ -181,6 +181,6 @@ public abstract class ModifyworldListener implements Listener {
 	}
 
 	private String formatEnumString(String enumName) {
-		return enumName.toLowerCase().replace("_", "");
+		return enumName.toLowerCase();
 	}
 }
