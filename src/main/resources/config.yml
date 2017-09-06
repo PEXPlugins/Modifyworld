@@ -1,3 +1,9 @@
+informPlayers: false
+useMaterialNames: true
+checkMetadata: false
+checkItemUse: false
+enableWhitelist: false
+dropRestrictedItem: false
 messages:
   message-format: '&f[&2Modifyworld&f]&4 %s'
   default-message: Sorry, you don't have enough permissions
