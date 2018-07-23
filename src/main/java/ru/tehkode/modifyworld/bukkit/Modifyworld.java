@@ -47,6 +47,7 @@ import java.util.Locale;
  */
 public class Modifyworld extends JavaPlugin {
 
+	@SuppressWarnings("unchecked")
 	protected final static Class<? extends ModifyworldListener>[] LISTENERS = new Class[]{
 		PlayerListener.class,
 		EntityListener.class,
@@ -100,9 +101,9 @@ public class Modifyworld extends JavaPlugin {
 	}
 
 	protected void registerListeners() {
-		for (Class listenerClass : LISTENERS) {
+		for (Class<? extends ModifyworldListener> listenerClass : LISTENERS) {
 			try {
-				Constructor constructor = listenerClass.getConstructor(Plugin.class, ConfigurationSection.class, PlayerInformer.class);
+				Constructor<?> constructor = listenerClass.getConstructor(Plugin.class, ConfigurationSection.class, PlayerInformer.class);
 				ModifyworldListener listener = (ModifyworldListener) constructor.newInstance(this, this.getConfig(), this.informer);
 				this.listeners.add(listener);
 			} catch (Throwable e) {

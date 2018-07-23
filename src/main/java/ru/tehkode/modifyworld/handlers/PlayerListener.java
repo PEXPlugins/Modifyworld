@@ -22,12 +22,14 @@ import java.util.logging.Logger;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -36,10 +38,8 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.material.SpawnEgg;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 import ru.tehkode.modifyworld.ModifyworldListener;
 import ru.tehkode.modifyworld.PlayerInformer;
 
@@ -138,13 +138,16 @@ public class PlayerListener extends ModifyworldListener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		// No inform to avoid spam
-		if (_permissionDenied(event.getPlayer(), "modifyworld.items.pickup", event.getItem().getItemStack())) {
-			event.setCancelled(true);
+	public void onEntityPickupItem(EntityPickupItemEvent event) {
+		// Do not inform the player to avoid spam.
+		if (event.getEntity() instanceof Player) {
+			Player player = (Player) event.getEntity();
+			if (_permissionDenied(player, "modifyworld.items.pickup", event.getItem().getItemStack())) {
+				event.setCancelled(true);
+			}
+	
+			this.checkPlayerInventory(player);
 		}
-
-		this.checkPlayerInventory(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -228,7 +231,8 @@ public class PlayerListener extends ModifyworldListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		if (this.checkItemUse) {
-			if (permissionDenied(event.getPlayer(), "modifyworld.items.use", event.getPlayer().getItemInHand(), "on.entity", event.getRightClicked())) {
+			if (permissionDenied(event.getPlayer(), "modifyworld.items.use",
+					event.getPlayer().getInventory().getItemInMainHand(), "on.entity", event.getRightClicked())) {
 				event.setCancelled(true);
 			}
 
@@ -251,28 +255,37 @@ public class PlayerListener extends ModifyworldListener {
 		Player player = event.getPlayer();
 
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) { //RIGHT_CLICK_AIR is cancelled by default.
-			switch (player.getItemInHand().getType()) {
+			Material mat = player.getInventory().getItemInMainHand().getType();
+			switch (mat) {
 				case POTION: //Only check splash potions.
-					if ((player.getItemInHand().getDurability() & 0x4000) != 0x4000) {
+					if ((player.getInventory().getItemInMainHand().getDurability() & 0x4000) != 0x4000) {
 						break;
 					}
 				case EGG:
-				case SNOW_BALL:
-				case EXP_BOTTLE:
-					if (permissionDenied(player, "modifyworld.items.throw", player.getItemInHand())) {
+				case SNOWBALL:
+				case EXPERIENCE_BOTTLE:
+					if (permissionDenied(player, "modifyworld.items.throw", player.getInventory().getItemInMainHand())) {
 						event.setUseItemInHand(Result.DENY);
 						//Denying a potion works fine, but the client needs to be updated because it already reduced the item.
-						if (player.getItemInHand().getType() == Material.POTION) {
+						if (player.getInventory().getItemInMainHand().getType() == Material.POTION) {
 							event.getPlayer().updateInventory();
 						}
 					}
 					return; // no need to check further
-				case MONSTER_EGG: // don't add MONSTER_EGGS here
-					if (permissionDenied(player, "modifyworld.spawn", ((SpawnEgg)player.getItemInHand().getData()).getSpawnedType())) {
-						event.setUseItemInHand(Result.DENY);
-					}
-					return; // no need to check further
 			}
+			
+			if (player.getInventory().getItemInMainHand().getItemMeta() instanceof SpawnEggMeta) {
+				String matStr = mat.toString();
+				if(matStr.endsWith("_SPAWN_EGG")) {
+					matStr = matStr.substring(0, matStr.length() - "_SPAWN_EGG".length());
+				}
+				EntityType entityType = EntityType.valueOf(matStr);
+				if (permissionDenied(player, "modifyworld.spawn", (entityType == null ? matStr : entityType))) {
+					event.setUseItemInHand(Result.DENY);
+				}
+				return; // no need to check further
+			}
+			
 		}
 
 		if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK && action != Action.PHYSICAL) {
@@ -280,7 +293,8 @@ public class PlayerListener extends ModifyworldListener {
 		}
 
 		if (this.checkItemUse && action != Action.PHYSICAL) {
-			if (permissionDenied(event.getPlayer(), "modifyworld.items.use", player.getItemInHand(), "on.block", event.getClickedBlock())) {
+			if (permissionDenied(event.getPlayer(), "modifyworld.items.use",
+					player.getInventory().getItemInMainHand(), "on.block", event.getClickedBlock())) {
 				event.setCancelled(true);
 			}
 

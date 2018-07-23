@@ -187,7 +187,7 @@ public class PlayerInformer {
 	private String describeMaterial(Material material) {
 		// TODO: implement data id
 
-		if (material == Material.INK_SACK) {
+		if (material == Material.INK_SAC) {
 			return "dye";
 		}
 
